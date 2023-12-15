@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  scraper:
+    ports:
+      - "8000:8000"
+    build:
+      dockerfile: ./scrap/Dockerfile
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/scraper.py
+    environment:
+      - PORT=8000
+      - youtube00e1f862e5eff=1
+      - ap98j3envoubi3fco1kc=0
+      - ch4875eda56be56000ac=0
+      - masto65ezfd86424f69a=0
+      - rss007d0675444aa13fc=1
+      - wei223be19ab11e891bo=0
+      - hackbc9419ab11eebe56=0
+      - tradview251ae30a11ee=0
+      - bitcointalk4de40ec26=0
+      - jvc8439846094ced03ff=0
+      - a7df32de3a60dfdb7a0b=0
+
+      - target=http://spotting:7999
