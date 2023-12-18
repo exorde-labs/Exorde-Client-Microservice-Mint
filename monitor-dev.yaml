@@ -23,7 +23,7 @@ services:
       - '443:443'
     volumes:
       - ./grafana:/var/lib/grafana
-      - ./etc/letsencrypt/live/node.exorde.dev:/etc/ssl/certs:ro
+      - /etc/letsencrypt/live/node.exorde.dev:/etc/ssl/certs:ro
 
   node-exporter:
     image: prom/node-exporter:v1.2.2
