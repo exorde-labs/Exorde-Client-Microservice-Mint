@@ -29,3 +29,4 @@ scrape_configs:
     - targets:
       - scraper:8000
       - 172.17.0.1:9100
+      - spotting:7999

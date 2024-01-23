@@ -1,23 +1,20 @@
 #! python3.10
 from aioprometheus.collectors import REGISTRY
 from aioprometheus.renderer import render
-from aiohttp import web
+from aiohttp import web, ClientSession
 import logging
 import asyncio
 import os
 from importlib import import_module
 import signal
-from aioprometheus.collectors import Counter, Gauge
+from aioprometheus.collectors import Counter
 
 from scraper_configuration import get_scrapers_configuration
+from keywords import choose_keyword
 
 TASKS = {}
 TASK_COMPLETED = None
 SHUTDOWN = False
-
-async def metrics(request):
-    content, http_headers = render(REGISTRY, [request.headers.get("accept")])
-    return web.Response(body=content, headers=http_headers)
 
 app = web.Application()
 
@@ -37,11 +34,21 @@ module_list = [
 
 push_counter = Counter("push", "Number of data pushed to spotting blades")
 
+
 def get_scraper_concurency_configuration() -> dict[str, int]:
     scraper_configuration = {}
     for module in module_list:
         scraper_configuration[module] = int(os.environ.get(module, 0))
     return scraper_configuration
+
+async def push_item(url, item):
+    async with ClientSession() as session:
+        try:
+            logging.info('pushing item')
+            async with session.post(url, json=item) as response:
+                return await response.text()
+        except:
+            logging.exception("An error occured while pushing an item")
 
 async def worker_task(scrap_module_name):
     module = import_module(scrap_module_name)
@@ -52,7 +59,9 @@ async def worker_task(scrap_module_name):
     specific_parameters = scraper_configuration.specific_modules_parameters.get(
         choosen_module_path, {}
     )
-    keyword = "BTC"
+    keyword = await choose_keyword(
+        choosen_module_path, scraper_configuration
+    )
     parameters = {
         "url_parameters": {"keyword": keyword},
         "keyword": keyword,
@@ -68,7 +77,7 @@ async def worker_task(scrap_module_name):
             await asyncio.sleep(.1)
             item = await asyncio.wait_for(iterator.__anext__(), timeout=120)
             push_counter.inc({"module": module.__name__})
-            print(item)
+            await push_item(os.getenv('spotting_target'), item)
     except Exception as e:
         logging.exception(f"Done with: {scrap_module_name} : {iterator}")
     finally:
@@ -145,4 +154,3 @@ def start_scraper():
 
 if __name__ == '__main__':
     start_scraper()
-
