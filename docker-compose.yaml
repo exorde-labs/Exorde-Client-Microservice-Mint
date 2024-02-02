@@ -36,6 +36,12 @@ services:
       timeout: 1s
       retries: 10
       start_period: 180s
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 6G
   processor:
     restart: always
     ports:
@@ -91,6 +97,6 @@ services:
     deploy:
       resources:
         limits:
-          memory: 7G
+          memory: 3G
         reservations:
-          memory: 7G
+          memory: 3G
