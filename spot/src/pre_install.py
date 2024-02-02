@@ -9,6 +9,19 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, pipeline
 from huggingface_hub import hf_hub_download
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from get_static_configuration import get_static_configuration
+from get_live_configuration import get_live_configuration
+
+import asyncio
+
+
+async def get_all_configuration():
+    live_configuration = await get_live_configuration()
+    await get_static_configuration(live_configuration)
+
+
+
+print("RUNNING PRE_INSTALL")
 
 print("importing wtpsplit....")
 wtp = WtP("wtp-canine-s-1l")
@@ -62,3 +75,5 @@ for pkg in available_packages:
         )
         installed_packages += 1
 logging.info(f"Installed Argos Lang packages: {str(installed_packages)}")
+
+asyncio.run(get_all_configuration())

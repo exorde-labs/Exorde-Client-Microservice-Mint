@@ -8,20 +8,20 @@ import asyncio
 import signal
 from aioprometheus.collectors import REGISTRY
 from aioprometheus.renderer import render
-from aiohttp import web
+from aiohttp import web, ClientSession
 import time
 
 app = web.Application()
 
-from aioprometheus.collectors import Counter, Histogram, Gauge
+from aioprometheus.collectors import Counter, Histogram
 
 receive_counter = Counter(
-    "reception", 
-    "Number of 'receive' calls by spotting"
+    "processor_reception", 
+    "Number of 'receive' calls by item processor"
 )
 too_big_counter = Counter(
-    "too_big", 
-    "Number of items that are marked as too big"
+    "processor_too_big", 
+    "Number of items that are marked as too big by processor"
 )
 process_histogram = Histogram(
     "process_execution_duration_seconds", 
@@ -36,18 +36,6 @@ process_error = Counter(
     "process_error", 
     "Amount of errored process"
 )
-batch_size_gauge = Gauge(
-    "batch_size", 
-    "Current batch size"
-)
-batch_buffer_size_gauge = Gauge(
-    "batch_buffer_size", 
-    "Amount of batches in queue"
-)
-receipt_count = Counter(
-    "spotting_receipt",
-    "Amount of spotting receipts"
-)
 
 def terminate(signal, frame):
     os._exit(0)
@@ -59,110 +47,14 @@ async def metrics(request):
     content, http_headers = render(REGISTRY, [request.headers.get("accept")])
     return web.Response(body=content, headers=http_headers)
 
-"""
--
-a. Receive data
-b. Process_data
-    -> expect TooBigError
-        -> split item
-            for e in splitted:
-                append e
-c. Add to batch
-
--
-a. On batch ready
-b. Process_batch
-c. Upload_to_ipfs
-d. Download ipfs file
-e. If count != 0 : continue
-f. Transaction
-g. Get receipt 
-"""
-
 from exorde_data import Item
-from models import StaticConfiguration
-from process import process, TooBigError, Processed
+from process import process, TooBigError
 
-from get_static_configuration import get_static_configuration
+from get_static_configuration import get_static_configuration, StaticConfiguration
 from get_live_configuration import get_live_configuration, LiveConfiguration
 
 from split_item import split_item
 from concurrent.futures import ThreadPoolExecutor
-
-
-def batch_reached_mature_size(batch) -> bool:
-    logging.info(f"BATCH SIZE IS {len(batch)}")
-    batch_size_gauge.set({}, len(batch))
-    if len(batch) >= 20:
-        return True
-    return False
-
-from process_batch import process_batch
-from commit_analyzed_batch import commit_analyzed_batch
-
-def create_batch_processor():
-    # Initialize semaphore and batch buffer
-    semaphore = asyncio.Semaphore(1)
-    batch_buffer = []
-
-    async def process_batch_internal(batch, app) -> None:
-        nonlocal semaphore, batch_buffer
-        executor = ThreadPoolExecutor()
-        loop = asyncio.get_running_loop()
-
-        # Process batches from the buffer
-        while batch_buffer:
-            current_batch = batch_buffer.pop(0)
-            async with semaphore:
-                try:
-                    timeout = 150  # Set your desired timeout in seconds
-                    logging.info("RUNNING BATCH PROCESSOR")
-                    result = await asyncio.wait_for(
-                        loop.run_in_executor(
-                            executor, 
-                            process_batch, 
-                            current_batch, 
-                            app["static_configuration"]
-                        ),
-                        timeout
-                    )
-                    logging.info("BATCH PROCESSOR COMPLETE")
-                    # Handle the processed result
-                    logging.info("COMMITING")
-                    await commit_analyzed_batch(result, app, receipt_count)
-                    logging.info("COMMIT OK")
-                except asyncio.TimeoutError:
-                    logging.error("Processing timed out for batch")
-                    # Handle the timeout case as needed
-
-    async def process_batch_external(batch, app) -> None:
-        nonlocal batch_buffer
-        # Add new batch to the buffer
-        batch_buffer.append(batch)
-        batch_buffer_size_gauge.set({}, len(batch_buffer))
-        # Trigger internal processing if not already running
-        if semaphore.locked():
-            logging.info(
-                "Another batch processing is in progress. Batch added to the buffer."
-            )
-        else:
-            await process_batch_internal(batch, app)
-
-    return process_batch_external
-trigger_batch_process = create_batch_processor()
-
-
-BATCH: list[Processed] = []
-async def run_batch_completion_trigger(app):
-    """
-    Checks wether the BATCH should be sent to processing and runs it if it does
-    """
-    global BATCH, receipt_count
-    if batch_reached_mature_size(BATCH):
-        logging.info("BATCH_REACHED_MAT_SIZE")
-        current_batch = [(i + 1, item) for i, item in enumerate(BATCH.copy())]
-        BATCH = []
-        await trigger_batch_process(current_batch, app)
 
 class Busy(Exception):
     """Thread Queue is busy handeling another item"""
@@ -193,7 +85,7 @@ def create_processor():
                 try:
                     timeout = 60
                     logging.info("PROCESS START")
-                    result = await asyncio.wait_for(
+                    processed_item = await asyncio.wait_for(
                         loop.run_in_executor(
                             executor,
                             process,
@@ -203,9 +95,16 @@ def create_processor():
                         ),
                         timeout
                     )
-                    logging.info("PROCESS OK - ADDING TO BATCH")
-                    BATCH.append(result)
-                    await run_batch_completion_trigger(app)
+                    logging.info(
+                        f"PROCESS OK - ADDING TO BATCH : {processed_item}"
+                    )
+                    async with ClientSession() as session:
+                        target = os.getenv('batch_target')
+                        assert target
+                        async with session.post(target, json=processed_item):
+                            # You can process the response here if needed
+                            logging.info("PROCESSED ITEM SENT")
+                    # send to batch_processor
                 except asyncio.TimeoutError:
                     logging.error("Processing timeoud out")
                 except TooBigError:
@@ -215,6 +114,8 @@ def create_processor():
                         app["live_configuration"]["max_token_count"]
                     )
                     process_buffer.extend(splitted)
+                except AssertionError:
+                    logging.info("No batch_target configured")
 
     async def process_external(item: Item, app) -> None:
         nonlocal process_buffer
@@ -227,11 +128,6 @@ def create_processor():
     return process_external
 item_processor = create_processor()
 
-async def push_item(item: Item, app):
-    """Interface to push new items into the processing batch"""
-    await item_processor(item, app)
-    # BATCH is manipulated by the item_processor
-
 
 from exorde_data import CreatedAt, Content, Domain, Url, Title
 
@@ -241,15 +137,17 @@ async def receive_item(request):
     raw_item = await request.json()
     receive_counter.inc({"host": request.headers.get("Host")})
     try:
-        item: Processed = Item(
+        item: Item = Item(
             created_at=CreatedAt(raw_item['created_at']),
-            title=Title(raw_item['title']),
+            title=Title(raw_item.get('title', '')),
             content=Content(raw_item['content']),
             domain=Domain(raw_item['domain']),
             url=Url(raw_item['url'])
         )
+        await item_processor(item, request.app)
+        # prep
         logging.info(item)
-        await push_item(item, request.app)
+        # send
     except:
         logging.exception("An error occured asserting an item structure")
         logging.debug(raw_item)
@@ -274,7 +172,7 @@ def start_spotter():
         level=logging.DEBUG, 
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
-    port = int(os.environ.get("PORT", "7999"))
+    port = int(os.environ.get("PORT", "7998"))
     logging.info(f"Hello World! I'm running on {port}")
     signal.signal(signal.SIGINT, terminate)
     signal.signal(signal.SIGTERM, terminate)

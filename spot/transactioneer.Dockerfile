@@ -51,40 +51,16 @@ RUN pip3.10 install --no-cache-dir \
 
 FROM base as exorde_spotting_a
 
-RUN pip3.10 install skops \
-        wtpsplit==1.2.3 
-
-
 FROM exorde_spotting_a as exorde_spotting_b
 
 # set display port to avoid crash
 ENV DISPLAY=:99
 
 WORKDIR /app
-## INSTALL ALL MODELS
-COPY spot/src/lab_initialization.py /app/lab_initialization.py
-COPY spot/src/protocol-configuration.yaml /app/protocol-configuration.yaml
-COPY spot/src/instanciate_w3.py /app/instanciate_w3.py
-COPY spot/src/pre_install.py /app/pre_install.py
-COPY spot/src/get_contracts.py /app/get_contracts.py
-COPY spot/src/write_web3.py /app/write_web3.py
-COPY spot/src/read_web3.py /app/read_web3.py
-COPY spot/src/get_static_configuration.py /app/get_static_configuration.py
-COPY spot/src/get_live_configuration.py /app/get_live_configuration.py
-COPY spot/src/get_worker_account.py /app/get_worker_account.py
-COPY spot/src/get_protocol_configuration.py /app/get_protocol_configuration.py
-COPY spot/src/get_contracts_and_abi_cnf.py /app/get_contracts_and_abi_cnf.py
-COPY spot/src/get_network_configuration.py /app/get_network_configuration.py
-
-RUN python3.10 -m spacy download en_core_web_trf
-
-RUN python3.10 pre_install.py 
 
 FROM exorde_spotting_b as exorde_spotting
 
 ## INSTALL THE APP
-RUN rm -rf spot/src
 COPY spot/src/* /app
 
-## ENTRY POINT IS MAIN.PY
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

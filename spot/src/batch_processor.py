@@ -8,7 +8,7 @@ import asyncio
 import signal
 from aioprometheus.collectors import REGISTRY
 from aioprometheus.renderer import render
-from aiohttp import web
+from aiohttp import web, ClientSession
 import time
 
 app = web.Application()
@@ -59,34 +59,11 @@ async def metrics(request):
     content, http_headers = render(REGISTRY, [request.headers.get("accept")])
     return web.Response(body=content, headers=http_headers)
 
-"""
--
-a. Receive data
-b. Process_data
-    -> expect TooBigError
-        -> split item
-            for e in splitted:
-                append e
-c. Add to batch
-
--
-a. On batch ready
-b. Process_batch
-c. Upload_to_ipfs
-d. Download ipfs file
-e. If count != 0 : continue
-f. Transaction
-g. Get receipt 
-"""
-
 from exorde_data import Item
-from models import StaticConfiguration
-from process import process, TooBigError, Processed
 
-from get_static_configuration import get_static_configuration
+from get_static_configuration import get_static_configuration, StaticConfiguration 
 from get_live_configuration import get_live_configuration, LiveConfiguration
 
-from split_item import split_item
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -98,14 +75,13 @@ def batch_reached_mature_size(batch) -> bool:
     return False
 
 from process_batch import process_batch
-from commit_analyzed_batch import commit_analyzed_batch
 
 def create_batch_processor():
     # Initialize semaphore and batch buffer
     semaphore = asyncio.Semaphore(1)
     batch_buffer = []
 
-    async def process_batch_internal(batch, app) -> None:
+    async def process_batch_internal(app) -> None:
         nonlocal semaphore, batch_buffer
         executor = ThreadPoolExecutor()
         loop = asyncio.get_running_loop()
@@ -129,7 +105,14 @@ def create_batch_processor():
                     logging.info("BATCH PROCESSOR COMPLETE")
                     # Handle the processed result
                     logging.info("COMMITING")
-                    await commit_analyzed_batch(result, app, receipt_count)
+                    logging.info(f"...COMMITING {result}")
+                    async with ClientSession() as session:
+                        target = os.getenv('transactioneer')
+                        assert target
+                        async with session.post(f"{target}/commit", json=result['items']):
+                            # You can process the response here if needed
+                            logging.info("PROCESSED ITEM SENT")
+                    # await commit_analyzed_batch(result, app, receipt_count)
                     logging.info("COMMIT OK")
                 except asyncio.TimeoutError:
                     logging.error("Processing timed out for batch")
@@ -146,11 +129,12 @@ def create_batch_processor():
                 "Another batch processing is in progress. Batch added to the buffer."
             )
         else:
-            await process_batch_internal(batch, app)
+            await process_batch_internal(app)
 
     return process_batch_external
 trigger_batch_process = create_batch_processor()
 
+from models import Processed
 
 BATCH: list[Processed] = []
 async def run_batch_completion_trigger(app):
@@ -164,6 +148,7 @@ async def run_batch_completion_trigger(app):
         BATCH = []
         await trigger_batch_process(current_batch, app)
 
+
 class Busy(Exception):
     """Thread Queue is busy handeling another item"""
 
@@ -172,88 +157,44 @@ class Busy(Exception):
         super().__init__(self.message)
 
 
-def create_processor():
-    semaphore = asyncio.Semaphore(1)
-    process_buffer = []
-
-    async def process_internal(app) -> None:
-        global BATCH
-        nonlocal semaphore, process_buffer
-        executor = ThreadPoolExecutor()
-        loop = asyncio.get_running_loop()
-
-#        start = time.time()
-#        end = time.time()
-#        process_histogram.observe({"time": "static"}, end - start)
-#        successful_process.inc({})
-
-        while process_buffer:
-            current_item = process_buffer.pop(0)
-            async with semaphore:
-                try:
-                    timeout = 60
-                    logging.info("PROCESS START")
-                    result = await asyncio.wait_for(
-                        loop.run_in_executor(
-                            executor,
-                            process,
-                            current_item,
-                            app["static_configuration"]["lab_configuration"],
-                            app["live_configuration"]["max_depth"]
-                        ),
-                        timeout
-                    )
-                    logging.info("PROCESS OK - ADDING TO BATCH")
-                    BATCH.append(result)
-                    await run_batch_completion_trigger(app)
-                except asyncio.TimeoutError:
-                    logging.error("Processing timeoud out")
-                except TooBigError:
-                    too_big_counter.inc({})
-                    splitted: list[Item] = split_item(
-                        current_item,
-                        app["live_configuration"]["max_token_count"]
-                    )
-                    process_buffer.extend(splitted)
-
-    async def process_external(item: Item, app) -> None:
-        nonlocal process_buffer
-        process_buffer.append(item)
-        if semaphore.locked():
-            logging.info("Another item added to process queue")
-        else:
-            await process_internal(app)
-
-    return process_external
-item_processor = create_processor()
-
-async def push_item(item: Item, app):
-    """Interface to push new items into the processing batch"""
-    await item_processor(item, app)
-    # BATCH is manipulated by the item_processor
-
-
 from exorde_data import CreatedAt, Content, Domain, Url, Title
+from models import Classification, TopKeywords
 
 # Summary, Picture, Author, ExternalId, ExternalParentId,
+from models import Translation, Processed, Language, Translated, Keywords
+
 
 async def receive_item(request):
+    global BATCH
     raw_item = await request.json()
     receive_counter.inc({"host": request.headers.get("Host")})
     try:
-        item: Processed = Item(
-            created_at=CreatedAt(raw_item['created_at']),
-            title=Title(raw_item['title']),
-            content=Content(raw_item['content']),
-            domain=Domain(raw_item['domain']),
-            url=Url(raw_item['url'])
+        processed_item: Processed = Processed(
+            classification=Classification(
+                label=raw_item["classification"]['label'], 
+                score=raw_item['classification']['score']
+            ),
+            translation=Translation(
+                language=Language(raw_item['translation']['language']), 
+                translation=Translated(raw_item['translation']['translation'])
+            ),
+            top_keywords=Keywords(list(raw_item['top_keywords'])),
+            item=Item(
+                created_at=CreatedAt(raw_item['item']['created_at']),
+                title=Title(raw_item['item'].get('title', '')),
+                content=Content(raw_item['item']['content']),
+                domain=Domain(raw_item['item']['domain']),
+                url=Url(raw_item['item']['url'])
+            )
         )
-        logging.info(item)
-        await push_item(item, request.app)
+        BATCH.append(processed_item)
+        await run_batch_completion_trigger(request.app)
+        logging.info(f"ADDED NEW ITEM TO BATCH : {len(BATCH)}")
     except:
         logging.exception("An error occured asserting an item structure")
         logging.debug(raw_item)
     return web.Response(text="received")
+
 
 app.router.add_post('/', receive_item)
 app.router.add_get('/', healthcheck)
@@ -269,7 +210,7 @@ async def configuration_init(app):
     app['live_configuration'] = live_configuration
 
 
-def start_spotter():
+def start_batch_processor():
     logging.basicConfig(
         level=logging.DEBUG, 
         format='%(asctime)s - %(levelname)s - %(message)s'
@@ -288,4 +229,4 @@ def start_spotter():
 
 
 if __name__ == '__main__':
-    start_spotter()
+    start_batch_processor()

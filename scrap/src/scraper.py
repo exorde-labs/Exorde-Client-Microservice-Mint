@@ -74,7 +74,7 @@ async def worker_task(scrap_module_name):
     try:
         logging.info(f"Working on: {scrap_module_name} : {iterator}")
         while True:
-            await asyncio.sleep(.1)
+            await asyncio.sleep(5)
             item = await asyncio.wait_for(iterator.__anext__(), timeout=120)
             push_counter.inc({"module": module.__name__})
             await push_item(os.getenv('spotting_target'), item)

@@ -29,4 +29,7 @@ scrape_configs:
     - targets:
       - scraper:8000
       - 172.17.0.1:9100
-      - spotting:7999
+      - processor:7998
+      - batch_processor:7999
+      - transactioneer:7991
+      - cadvisor:8080

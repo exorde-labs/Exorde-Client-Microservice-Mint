@@ -1,8 +1,6 @@
 from enum import Enum
 from madtypes import MadType
 
-from eth_account.signers.local import LocalAccount
-from web3 import AsyncWeb3
 from typing import Optional
 
 from exorde_data import (
@@ -159,19 +157,6 @@ class Analysis(dict, metaclass=MadType):
     emotion: Emotion
     irony: Irony
     age: Age
-
-
-class StaticConfiguration(dict):
-    main_address: str
-    worker_account: LocalAccount
-    protocol_configuration: dict
-    network_configuration: dict
-    contracts_and_abi: dict
-    contracts: dict
-    read_web3: AsyncWeb3
-    write_web3: AsyncWeb3
-    lab_configuration: dict
-    gas_cache: dict
 
 
 class LiveConfiguration(dict):

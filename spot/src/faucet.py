@@ -10,7 +10,7 @@ import logging, os, asyncio
 from web3 import Web3
 
 from select_random_faucet import select_random_faucet
-from models import StaticConfiguration
+from get_static_configuration import StaticConfiguration
 
 
 async def faucet(static_configuration: StaticConfiguration):

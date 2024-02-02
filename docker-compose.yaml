@@ -1,23 +1,67 @@
 version: '3'
 
 services:
-  spotting:
+  transactioneer:
+    restart: always
+    ports:
+      - "7991:7991"
+    build:
+      dockerfile: ./spot/transactioneer.Dockerfile
+    environment:
+      - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/transactioneer.py
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:7991/ || exit 1"]
+      interval: 5s
+      timeout: 1s
+      retries: 10
+      start_period: 180s
+  batch_processor:
+    restart: always
     ports:
       - "7999:7999"
     build:
       dockerfile: ./spot/Dockerfile
     environment:
-      - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f53m
+      - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531 # todo: remove
+      - transactioneer=http://transactioneer:7991
     init: true
     working_dir: /app/
-    command: python3.10 /app/spotting.py
+    command: python3.10 /app/batch_processor.py
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:7999/ || exit 1"]
       interval: 5s
       timeout: 1s
       retries: 10
       start_period: 180s
+  processor:
+    restart: always
+    ports:
+      - "7998:7998"
+    build:
+      dockerfile: ./spot/Dockerfile
+    environment:
+      - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531 # todo remove
+      - batch_target=http://batch_processor:7999
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/item_processor.py
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:7998/ || exit 1"]
+      interval: 5s
+      timeout: 1s
+      retries: 10
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 6G
   scraper:
+    restart: always
     ports:
       - "8000:8000"
     build:
@@ -38,7 +82,15 @@ services:
       - bitcointalk4de40ec26=1
       - jvc8439846094ced03ff=1
       - a7df32de3a60dfdb7a0b=1
-      - spotting_target=http://spotting:7999
+      - spotting_target=http://processor:7998
     depends_on:
-      spotting:
+      batch_processor:
         condition: service_healthy
+      processor:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 7G
+        reservations:
+          memory: 7G
