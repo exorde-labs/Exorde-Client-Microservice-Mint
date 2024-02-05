@@ -90,13 +90,11 @@ services:
       - a7df32de3a60dfdb7a0b=1
       - spotting_target=http://processor:7998
     depends_on:
-      batch_processor:
-        condition: service_healthy
-      processor:
-        condition: service_healthy
+      - batch_processor
+      - processor
     deploy:
       resources:
         limits:
-          memory: 3G
+          memory: 4G
         reservations:
-          memory: 3G
+          memory: 4G

@@ -218,16 +218,22 @@ def get_source_type(item: ProtocolItem) -> SourceType:
         return SourceType("social")
     return SourceType("news")
 
+from opentelemetry import trace
+from opentelemetry.trace import StatusCode
 
 def process_batch(
     batch: list[tuple[int, Processed]], static_configuration
 ) -> Batch:
+    tracer = trace.get_tracer(__name__)
     lab_configuration: dict = static_configuration["lab_configuration"]
     logging.info(f"running batch for {len(batch)}")
-    analysis_results: list[Analysis] = tag(
-        [processed.translation.translation for (__id__, processed) in batch],
-        lab_configuration,
-    )
+    with tracer.start_as_current_span("tag") as tag_span:
+        analysis_results: list[Analysis] = tag(
+            [processed.translation.translation for (__id__, processed) in batch],
+            lab_configuration,
+        )
+        tag_span.set_status(StatusCode.OK)
+
     complete_processes: dict[int, list[ProcessedItem]] = {}
     for (id, processed), analysis in zip(batch, analysis_results):
         prot_item: ProtocolItem = ProtocolItem(
@@ -255,14 +261,14 @@ def process_batch(
                 classification=processed.classification,
                 top_keywords=processed.top_keywords,
                 language_score=analysis.language_score,
-                gender=analysis.gender,
+                #gender=analysis.gender,
                 sentiment=analysis.sentiment,
                 embedding=analysis.embedding,
                 source_type=get_source_type(prot_item),
                 text_type=analysis.text_type,
                 emotion=analysis.emotion,
                 irony=analysis.irony,
-                age=analysis.age,
+                #age=analysis.age,
             ),
             collection_client_version=CollectionClientVersion(
                 f"exorde:v.{metadata.version('exorde_data')}"
@@ -274,10 +280,12 @@ def process_batch(
             complete_processes[id] = []
         complete_processes[id].append(completed)
     aggregated = []
-    for __key__, values in complete_processes.items():
-        merged_ = merge_chunks(values)
-        if merged_ is not None:
-            aggregated.append(merged_)
+    with tracer.start_as_current_span("merge_chunks") as merge_chunks_span:
+        for __key__, values in complete_processes.items():
+            merged_ = merge_chunks(values)
+            if merged_ is not None:
+                aggregated.append(merged_)
+        merge_chunks_span.set_status(StatusCode.OK)
     result_batch: Batch = Batch(
         items=aggregated, 
         kind=BatchKindEnum.SPOTTING

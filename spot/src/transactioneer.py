@@ -89,7 +89,7 @@ async def make_transaction(request):
     return web.Response(text='received')
 
 async def healthcheck(__request__):
-    return web.Response(status=200)
+    return web.json_response({"status": "ok"})
 
 app.router.add_post('/commit', make_transaction)
 app.router.add_get('/', healthcheck)

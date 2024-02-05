@@ -80,6 +80,12 @@ RUN python3.10 -m spacy download en_core_web_trf
 
 RUN python3.10 pre_install.py 
 
+RUN pip3.10 install opentelemetry-api \
+        opentelemetry-sdk \
+        opentelemetry-exporter-jaeger \
+        opentelemetry-instrumentation-aiohttp-client \
+        opentelemetry-sdk opentelemetry-exporter-otlp
+
 FROM exorde_spotting_b as exorde_spotting
 
 ## INSTALL THE APP

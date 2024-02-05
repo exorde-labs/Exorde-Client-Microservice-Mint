@@ -13,6 +13,7 @@ async def commit_analyzed_batch(processed_batch, app):
     logging.info(processed_batch)
     try:
         cid: Union[str, None] = await upload_to_ipfs(processed_batch)
+        logging.info(f"Uploaded : {cid}")
         if cid != None:
             post_upload_file: dict = await download_ipfs_file(cid)
             item_count = len(post_upload_file["items"])

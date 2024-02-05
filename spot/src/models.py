@@ -152,11 +152,11 @@ class Analysis(dict, metaclass=MadType):
     language_score: LanguageScore
     sentiment: Sentiment
     embedding: Embedding
-    gender: Gender
+    #gender: Gender
     text_type: TextType
     emotion: Emotion
     irony: Irony
-    age: Age
+    #age: Age
 
 
 class LiveConfiguration(dict):
@@ -244,12 +244,12 @@ class ProtocolAnalysis(dict, metaclass=MadType):
     language_score: LanguageScore
     sentiment: Sentiment
     embedding: Embedding
-    gender: Gender
+    #gender: Gender
     source_type: SourceType
     text_type: TextType
     emotion: Emotion
     irony: Irony
-    age: Age
+    #age: Age
 
 
 class ProcessedItem(dict, metaclass=MadType):

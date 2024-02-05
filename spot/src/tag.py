@@ -22,6 +22,9 @@ from models import (
     Analysis,
 )
 
+from opentelemetry import trace
+from opentelemetry.trace import StatusCode
+
 # sentence_transformers
 # transformers
 # finvader
@@ -92,35 +95,42 @@ def tag(documents: list[str], lab_configuration):
               contains various processed data like embeddings, text classifications, sentiment, etc.,
               as key-value pairs.
     """
-    nlp = lab_configuration["nlp"]
-    device = lab_configuration["device"]
-    mappings = lab_configuration["mappings"]
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("tag_init") as tag_init_span:
+        nlp = lab_configuration["nlp"]
+        device = lab_configuration["device"]
+        mappings = lab_configuration["mappings"]
 
-    def predict(text, pipe, tag, mappings):
-        preds = pipe.predict(text, verbose=0)[0]
-        result = []
-        for i in range(len(preds)):
-            result.append((mappings[tag][i], float(preds[i])))
-        return result
+        def predict(text, pipe, tag, mappings):
+            preds = pipe.predict(text, verbose=0)[0]
+            result = []
+            for i in range(len(preds)):
+                result.append((mappings[tag][i], float(preds[i])))
+            return result
 
-    # get text content attribute from all items
-    for doc in documents:
-        assert isinstance(doc, str)
+        # get text content attribute from all items
+        for doc in documents:
+            assert isinstance(doc, str)
 
-    # Create an empty DataFrame
-    tmp = pd.DataFrame()
+        # Create an empty DataFrame
+        tmp = pd.DataFrame()
 
-    # Add the original text documents
-    tmp["Translation"] = documents
+        # Add the original text documents
+        tmp["Translation"] = documents
 
-    assert tmp["Translation"] is not None
-    assert len(tmp["Translation"]) > 0
+        assert tmp["Translation"] is not None
+        assert len(tmp["Translation"]) > 0
 
-    # Compute sentence embeddings
-    model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    tmp["Embedding"] = tmp["Translation"].swifter.apply(
-        lambda x: list(model.encode(x).astype(float))
-    )
+        tag_init_span.set_status(StatusCode.OK)
+
+
+    with tracer.start_as_current_span("tag_sentence_embeddings") as sentence_embedding_span:
+        # Compute sentence embeddings
+        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        tmp["Embedding"] = tmp["Translation"].swifter.apply(
+            lambda x: list(model.encode(x).astype(float))
+        )
+        sentence_embedding_span.set_status(StatusCode.OK)
 
     # Text classification pipelines
     text_classification_models = [
@@ -129,62 +139,75 @@ def tag(documents: list[str], lab_configuration):
         ("LanguageScore", "salesken/query_wellformedness_score"),
         ("TextType", "marieke93/MiniLM-evidence-types"),
     ]
+
+
     for col_name, model_name in text_classification_models:
-        pipe = pipeline(
-            "text-classification",
-            model=model_name,
-            top_k=None,
-            device=device,
-            max_length=512,
-            padding=True,
-        )
-        tmp[col_name] = tmp["Translation"].swifter.apply(
-            lambda x: [(y["label"], float(y["score"])) for y in pipe(x)[0]]
-        )
-        del pipe  # free ram for latest pipe
-
-    # Tokenization for custom models
-    tokenizer = AutoTokenizer.from_pretrained("bert-large-uncased")
-    tmp["Embedded"] = tmp["Translation"].swifter.apply(
-        lambda x: np.array(
-            tokenizer.encode_plus(
-                x,
-                add_special_tokens=True,
+        with tracer.start_as_current_span(model_name) as model_span:
+            pipe = pipeline(
+                "text-classification",
+                model=model_name,
+                top_k=None,
+                device=device,
                 max_length=512,
-                truncation=True,
-                padding="max_length",
-                return_attention_mask=False,
-                return_tensors="tf",
-            )["input_ids"][0]
-        ).reshape(1, -1)
-    )
+                padding=True,
+            )
+            tmp[col_name] = tmp["Translation"].swifter.apply(
+                lambda x: [(y["label"], float(y["score"])) for y in pipe(x)[0]]
+            )
+            del pipe  # free ram for latest pipe
+            model_span.set_status(StatusCode.OK)
 
-    # Sentiment analysis using VADER
-    emoji_lexicon = hf_hub_download(
-        repo_id="ExordeLabs/SentimentDetection",
-        filename="emoji_unic_lexicon.json",
-    )
-    loughran_dict = hf_hub_download(
-        repo_id="ExordeLabs/SentimentDetection", filename="loughran_dict.json"
-    )
-    with open(emoji_lexicon) as f:
-        unic_emoji_dict = json.load(f)
-    with open(loughran_dict) as f:
-        Loughran_dict = json.load(f)
-    sentiment_analyzer = SentimentIntensityAnalyzer()
-    sentiment_analyzer.lexicon.update(Loughran_dict)
-    sentiment_analyzer.lexicon.update(unic_emoji_dict)
+    with tracer.start_as_current_span('tokenization') as tokenization_span:
+        # Tokenization for custom models
+        tokenizer = AutoTokenizer.from_pretrained("bert-large-uncased")
+        tmp["Embedded"] = tmp["Translation"].swifter.apply(
+            lambda x: np.array(
+                tokenizer.encode_plus(
+                    x,
+                    add_special_tokens=True,
+                    max_length=512,
+                    truncation=True,
+                    padding="max_length",
+                    return_attention_mask=False,
+                    return_tensors="tf",
+                )["input_ids"][0]
+            ).reshape(1, -1)
+        )
+        tokenization_span.set_status(StatusCode.OK)
 
-    
-    ############################
-    # financial distilroberta
-    fdb_tokenizer = AutoTokenizer.from_pretrained("mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis")
-    fdb_model = AutoModelForSequenceClassification.from_pretrained("mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis")
-    ############################
-    # distilbert sentiment
-    gdb_tokenizer = AutoTokenizer.from_pretrained("lxyuan/distilbert-base-multilingual-cased-sentiments-student")
-    gdb_model = AutoModelForSequenceClassification.from_pretrained("lxyuan/distilbert-base-multilingual-cased-sentiments-student")
-    ############################
+
+    with tracer.start_as_current_span('sentiment_detection') as sentiment_span:
+        # Sentiment analysis using VADER
+        emoji_lexicon = hf_hub_download(
+            repo_id="ExordeLabs/SentimentDetection",
+            filename="emoji_unic_lexicon.json",
+        )
+        loughran_dict = hf_hub_download(
+            repo_id="ExordeLabs/SentimentDetection", filename="loughran_dict.json"
+        )
+        with open(emoji_lexicon) as f:
+            unic_emoji_dict = json.load(f)
+        with open(loughran_dict) as f:
+            Loughran_dict = json.load(f)
+        sentiment_analyzer = SentimentIntensityAnalyzer()
+        sentiment_analyzer.lexicon.update(Loughran_dict)
+        sentiment_analyzer.lexicon.update(unic_emoji_dict)
+        sentiment_span.set_status(StatusCode.OK)
+
+    with tracer.start_as_current_span('roberta_init') as roberta_init_span:
+        ############################
+        # financial distilroberta
+        fdb_tokenizer = AutoTokenizer.from_pretrained("mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis")
+        fdb_model = AutoModelForSequenceClassification.from_pretrained("mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis")
+        roberta_init_span.set_status(StatusCode.OK)
+
+    with tracer.start_as_current_span('distilbert_init') as distilbert_init_span:
+        ############################
+        # distilbert sentiment
+        gdb_tokenizer = AutoTokenizer.from_pretrained("lxyuan/distilbert-base-multilingual-cased-sentiments-student")
+        gdb_model = AutoModelForSequenceClassification.from_pretrained("lxyuan/distilbert-base-multilingual-cased-sentiments-student")
+        ############################
+        distilbert_init_span.set_status(StatusCode.OK)
 
     fdb_pipe = pipeline(
         "text-classification",
@@ -266,16 +289,18 @@ def tag(documents: list[str], lab_configuration):
             compounded_total_score = round((0.60 * gen_distilbert_sentiment + 0.40 * vader_sent),2)
         return compounded_total_score
 
-    # sentiment swifter apply compounded_sentiment
-    tmp["Sentiment"] = tmp["Translation"].swifter.apply(compounded_sentiment)
-    
-    # financial sentiment swifter apply compounded_financial_sentiment
-    tmp["FinancialSentiment"] = tmp["Translation"].swifter.apply(compounded_financial_sentiment)
+    with tracer.start_as_current_span('sentiment_analysis') as sentiment_span:
+        # sentiment swifter apply compounded_sentiment
+        tmp["Sentiment"] = tmp["Translation"].swifter.apply(compounded_sentiment)
+        
+        # financial sentiment swifter apply compounded_financial_sentiment
+        tmp["FinancialSentiment"] = tmp["Translation"].swifter.apply(compounded_financial_sentiment)
+        sentiment_span.set_status(StatusCode.OK)
 
     # Custom model pipelines
     custom_model_data = [
-        ("Age", "ExordeLabs/AgeDetection", "ageDetection.h5"),
-        ("Gender", "ExordeLabs/GenderDetection", "genderDetection.h5"),
+        # ("Age", "ExordeLabs/AgeDetection", "ageDetection.h5"),
+        # ("Gender", "ExordeLabs/GenderDetection", "genderDetection.h5"),
         # (
         #     "HateSpeech",
         #     "ExordeLabs/HateSpeechDetection",
@@ -284,23 +309,27 @@ def tag(documents: list[str], lab_configuration):
     ]
 
     for col_name, repo_id, file_name in custom_model_data:
-        model_file = hf_hub_download(repo_id=repo_id, filename=file_name)
-        custom_model = tf.keras.models.load_model(
-            model_file,
-            custom_objects={
-                "TokenAndPositionEmbedding": TokenAndPositionEmbedding,
-                "TransformerBlock": TransformerBlock,
-            },
-        )
-        tmp[col_name] = tmp["Embedded"].swifter.apply(
-            lambda x: predict(x, custom_model, col_name, mappings)
-        )
-        del custom_model  # free ram for latest custom_model
+        with tracer.start_as_current_span(f'{file_name}') as model_loading_span:
+            model_file = hf_hub_download(repo_id=repo_id, filename=file_name)
+            custom_model = tf.keras.models.load_model(
+                model_file,
+                custom_objects={
+                    "TokenAndPositionEmbedding": TokenAndPositionEmbedding,
+                    "TransformerBlock": TransformerBlock,
+                },
+            )
+            tmp[col_name] = tmp["Embedded"].swifter.apply(
+                lambda x: predict(x, custom_model, col_name, mappings)
+            )
+            del custom_model  # free ram for latest custom_model
+            model_loading_span.set_status(StatusCode.OK)
 
     del tmp["Embedded"]
     # The output is a list of dictionaries, where each dictionary represents a single input text and contains
     # various processed data like embeddings, text classifications, sentiment, etc., as key-value pairs.
     # Update the items with processed data
+
+
     tmp = tmp.to_dict(orient="records")
 
     _out = []
@@ -311,9 +340,9 @@ def tag(documents: list[str], lab_configuration):
 
         embedding = Embedding(tmp[i]["Embedding"])
 
-        gender = Gender(
-            male=tmp[i]["Gender"][0][1], female=tmp[i]["Gender"][1][1]
-        )
+        #gender = Gender(
+        #    male=tmp[i]["Gender"][0][1], female=tmp[i]["Gender"][1][1]
+        #)
 
         types = {item[0]: item[1] for item in tmp[i]["TextType"]}
         text_type = TextType(
@@ -361,24 +390,24 @@ def tag(documents: list[str], lab_configuration):
 
         irony = Irony(irony=ironies["irony"], non_irony=ironies["non_irony"])
 
-        ages = {item[0]: item[1] for item in tmp[i]["Age"]}
+        # ages = {item[0]: item[1] for item in tmp[i]["Age"]}
 
-        age = Age(
-            below_twenty=ages["<20"],
-            twenty_thirty=ages["20<30"],
-            thirty_forty=ages["30<40"],
-            forty_more=ages[">=40"],
-        )
+        #age = Age(
+        #    below_twenty=ages["<20"],
+        #    twenty_thirty=ages["20<30"],
+        #    thirty_forty=ages["30<40"],
+        #    forty_more=ages[">=40"],
+        #)
 
         analysis = Analysis(
             language_score=language_score,
             sentiment=sentiment,
             embedding=embedding,
-            gender=gender,
+            #gender=gender,
             text_type=text_type,
             emotion=emotion,
             irony=irony,
-            age=age,
+            #age=age,
         )
 
         _out.append(analysis)
