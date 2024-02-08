@@ -63,4 +63,10 @@ FROM exorde_spotting_b as exorde_spotting
 ## INSTALL THE APP
 COPY spot/src/* /app
 
+RUN pip3.10 install opentelemetry-api \
+        opentelemetry-sdk \
+        opentelemetry-exporter-jaeger \
+        opentelemetry-instrumentation-aiohttp-client \
+        opentelemetry-sdk opentelemetry-exporter-otlp
+
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python

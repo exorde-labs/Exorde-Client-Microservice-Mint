@@ -135,9 +135,9 @@ def tag(documents: list[str], lab_configuration):
     # Text classification pipelines
     text_classification_models = [
         ("Emotion", "SamLowe/roberta-base-go_emotions"),
-        ("Irony", "cardiffnlp/twitter-roberta-base-irony"),
+        # ("Irony", "cardiffnlp/twitter-roberta-base-irony"),
         ("LanguageScore", "salesken/query_wellformedness_score"),
-        ("TextType", "marieke93/MiniLM-evidence-types"),
+        # ("TextType", "marieke93/MiniLM-evidence-types"),
     ]
 
 
@@ -344,16 +344,16 @@ def tag(documents: list[str], lab_configuration):
         #    male=tmp[i]["Gender"][0][1], female=tmp[i]["Gender"][1][1]
         #)
 
-        types = {item[0]: item[1] for item in tmp[i]["TextType"]}
-        text_type = TextType(
-            assumption=types["Assumption"],
-            anecdote=types["Anecdote"],
-            none=types["None"],
-            definition=types["Definition"],
-            testimony=types["Testimony"],
-            other=types["Other"],
-            study=types["Statistics/Study"],
-        )
+        # types = {item[0]: item[1] for item in tmp[i]["TextType"]}
+        # text_type = TextType(
+        #     assumption=types["Assumption"],
+        #     anecdote=types["Anecdote"],
+        #     none=types["None"],
+        #     definition=types["Definition"],
+        #     testimony=types["Testimony"],
+        #     other=types["Other"],
+        #     study=types["Statistics/Study"],
+        # )
 
         emotions = {item[0]: item[1] for item in tmp[i]["Emotion"]}
         emotion = Emotion(
@@ -386,9 +386,9 @@ def tag(documents: list[str], lab_configuration):
             nervousness=emotions["nervousness"],
         )
 
-        ironies = {item[0]: item[1] for item in tmp[i]["Irony"]}
+        # ironies = {item[0]: item[1] for item in tmp[i]["Irony"]}
 
-        irony = Irony(irony=ironies["irony"], non_irony=ironies["non_irony"])
+        # irony = Irony(irony=ironies["irony"], non_irony=ironies["non_irony"])
 
         # ages = {item[0]: item[1] for item in tmp[i]["Age"]}
 
@@ -404,9 +404,9 @@ def tag(documents: list[str], lab_configuration):
             sentiment=sentiment,
             embedding=embedding,
             #gender=gender,
-            text_type=text_type,
+            # text_type=text_type,
             emotion=emotion,
-            irony=irony,
+            # irony=irony,
             #age=age,
         )
 

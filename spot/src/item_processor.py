@@ -40,8 +40,12 @@ def setup_tracing():
     
 app = web.Application()
 
-from aioprometheus.collectors import Counter, Histogram
+from aioprometheus.collectors import Counter, Histogram, Gauge
 
+queue_length_gauge = Gauge(
+    "process_queue_length", 
+    "Current number of items in the processing queue"
+)
 receive_counter = Counter(
     "processor_reception", 
     "Number of 'receive' calls by item processor"
@@ -159,7 +163,7 @@ def thread_function(app):
                     current_item = None
                 if current_item is not None:
                     logging.info("processing new item")
-                    await processing_logic(app, current_item)
+                    await asyncio.wait_for(processing_logic(app, current_item), timeout=1)
             except:
                 logging.exception("An error occured in processor thread")
         await asyncio.sleep(1)
@@ -214,6 +218,7 @@ async def receive_item(request):
                 url=Url(raw_item['url'])
             )
             await app['process_queue'].put(item)
+            queue_length_gauge.set({}, app['process_queue'].qsize())
             receive_counter.inc({})
             logging.info(item)
             span.set_status(StatusCode.OK)

@@ -12,6 +12,14 @@ def terminate(signal, frame):
 from get_static_configuration import get_static_configuration, StaticConfiguration
 from get_live_configuration import get_live_configuration, LiveConfiguration
 
+from opentelemetry import trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.semconv.resource import ResourceAttributes
+from opentelemetry.trace.status import Status
+from opentelemetry.trace import StatusCode
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace import TracerProvider
 
 from aioprometheus.collectors import Counter
 
@@ -24,10 +32,24 @@ receipt_count = Counter(
 from aioprometheus.collectors import REGISTRY
 from aioprometheus.renderer import render
 
+def setup_tracing():
+    resource = Resource(attributes={
+        ResourceAttributes.SERVICE_NAME: "transactioneer"
+    })
+
+    trace_provider = TracerProvider(resource=resource)
+    jaeger_exporter = JaegerExporter(
+        agent_host_name="jaeger",
+        agent_port=6831,
+    )
+
+    span_processor = BatchSpanProcessor(jaeger_exporter)
+    trace_provider.add_span_processor(span_processor)
+    trace.set_tracer_provider(trace_provider)
+
 async def metrics(request):
     content, http_headers = render(REGISTRY, [request.headers.get("accept")])
     return web.Response(body=content, headers=http_headers)
-
 
 
 TASKS = []
@@ -69,14 +91,21 @@ def log_callback(task):
 app.router.add_get('/metrics', metrics)
 
 async def create_task(items, app):
+    tracer = trace.get_tracer(__name__)
     global receipt_count
     logging.info("CREATING commit")
     try:
-        await commit_analyzed_batch({"items": items, "kind": "SPOTTING"}, app)
-        receipt_count.inc({})
+        with tracer.start_as_current_span("commit_analyzed_batch") as commit_analyzed_batch_span:
+            await commit_analyzed_batch({"items": items, "kind": "SPOTTING"}, app)
+            commit_analyzed_batch_span.set_status(StatusCode.OK)
+            receipt_count.inc({})
+            logging.info("COMMIT OK")
     except:
+        logging.info("COMMIT FAILED")
         logging.exception("An Error occured commiting analyzed batch")
-    logging.info("COMMIT OK")
+        commit_analyzed_batch_span.record_exception(e)
+        commit_analyzed_batch_span.set_status(StatusCode.ERROR, "Failed to send processed item")
+    
 
 async def make_transaction(request):
     global TASKS
@@ -88,8 +117,8 @@ async def make_transaction(request):
     TASKS.append(task)
     return web.Response(text='received')
 
-async def healthcheck(__request__):
-    return web.json_response({"status": "ok"})
+async def healthcheck(request):
+    return web.Response(status=200)
 
 app.router.add_post('/commit', make_transaction)
 app.router.add_get('/', healthcheck)
@@ -98,6 +127,7 @@ async def start_background_tasks(app):
     app['monitor_task'] = asyncio.create_task(monitor_tasks())
 
 def start_transactioneer():
+    setup_tracing()
     logging.basicConfig(
         level=logging.DEBUG, 
         format='%(asctime)s - %(levelname)s - %(message)s'

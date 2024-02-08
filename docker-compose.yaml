@@ -74,7 +74,7 @@ services:
       dockerfile: ./scrap/Dockerfile
     init: true
     working_dir: /app/
-    command: python3.10 /app/scraper.py
+    command: python3.10 /app/concurency_scraper.py
     environment:
       - PORT=8000
       - youtube00e1f862e5eff=1
@@ -97,4 +97,85 @@ services:
         limits:
           memory: 4G
         reservations:
+          memory: 4G
+  youtube:
+    restart: always
+    ports:
+      - "8001:8000"
+    build:
+      dockerfile: ./scrap/Dockerfile
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/scraper.py
+    environment:
+      - PORT=8000
+      - scraper_module=youtube00e1f862e5eff
+      - spotting_target=http://processor:7998
+    depends_on:
+      - batch_processor
+      - processor
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+  weibo:
+    restart: always
+    ports:
+      - "8002:8000"
+    build:
+      dockerfile: ./scrap/Dockerfile
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/scraper.py
+    environment:
+      - PORT=8000
+      - scraper_module=wei223be19ab11e891bo
+      - spotting_target=http://processor:7998
+    depends_on:
+      - batch_processor
+      - processor
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+  rss:
+    restart: always
+    ports:
+      - "8003:8000"
+    build:
+      dockerfile: ./scrap/Dockerfile
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/scraper.py
+    environment:
+      - PORT=8000
+      - scraper_module=rss007d0675444aa13fc
+      - spotting_target=http://processor:7998
+    depends_on:
+      - batch_processor
+      - processor
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  hn:
+    restart: always
+    ports:
+      - "8004:8000"
+    build:
+      dockerfile: ./scrap/Dockerfile
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/scraper.py
+    environment:
+      - PORT=8000
+      - scraper_module=hackbc9419ab11eebe56
+      - spotting_target=http://processor:7998
+    depends_on:
+      - batch_processor
+      - processor
+    deploy:
+      resources:
+        limits:
           memory: 4G

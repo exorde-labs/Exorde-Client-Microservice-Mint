@@ -29,6 +29,13 @@ RUN pip3.10 install --no-cache-dir --upgrade "git+https://github.com/exorde-labs
 RUN pip3.10 install --no-cache-dir --upgrade "git+https://github.com/exorde-labs/a7df32de3a60dfdb7a0b"
 RUN pip3.10 install aioprometheus==23.3.0
 
+RUN pip3.10 install opentelemetry-api \
+        opentelemetry-sdk \
+        opentelemetry-exporter-jaeger \
+        opentelemetry-instrumentation-aiohttp-client \
+        opentelemetry-sdk opentelemetry-exporter-otlp
+
+
 RUN apt-get update && \
     apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*

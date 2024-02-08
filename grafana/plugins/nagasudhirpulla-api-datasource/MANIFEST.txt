@@ -1,0 +1,44 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "community",
+  "signedByOrg": "nagasudhirpulla",
+  "signedByOrgName": "nagasudhirpulla",
+  "plugin": "nagasudhirpulla-api-datasource",
+  "version": "1.2.4",
+  "time": 1673407827459,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "CHANGELOG.md": "65b243d61e410b055ad3984a979fee25df47b24529bc2bcb35b8d95ca3dbd550",
+    "gpx_nagasudhirpulla-api-datasource_darwin_amd64": "193e9a0cb5c1bd57b59eaf984fc7d5c56912405abfc4f8d06e148304ec86f5d4",
+    "gpx_nagasudhirpulla-api-datasource_darwin_arm64": "6a8712a0cbf8f45b496f11210d65470a62f38ccd6f1d8b326a566530ae45ebf5",
+    "gpx_nagasudhirpulla-api-datasource_linux_amd64": "5c0a952981939b01418de5167b57d907e83e5a8a51451c54f385b650617bbc8c",
+    "gpx_nagasudhirpulla-api-datasource_linux_arm": "f8aa77caeb2fbdbf03677cc9580a5fe9f2e49fff5aa9d510676f02d8e264c03a",
+    "gpx_nagasudhirpulla-api-datasource_linux_arm64": "c4af9bbc26c61fb7fe0224bbc9478db6ca7f76a42d68b78ccc486e1840a1bf1d",
+    "gpx_nagasudhirpulla-api-datasource_windows_amd64.exe": "2394239ba58ca9068d47ff7232af761ba4baa218ef31aee86a85f0f778ee2d0e",
+    "img/json-api-backend.png": "12b76fa70697a9cec43601d2e58a987e780be650a19bd2195ccb593c21c6cc40",
+    "img/logo.svg": "3cd7cabd7d4395c0f0267703cf5f69499d5913457926929987ee2028a6620c2b",
+    "img/plugin-settings-example.png": "31eb339f70ef1e7928721802ecce0f0b252ec1bac222e2592ea8bc984f2d8066",
+    "img/query-editor-example.png": "4e74f36318df142b373efc11b766d29713eba6d72e311d074c9a235da92ee6ab",
+    "img/query-inspector-payload-example.png": "39e9a03a680770f2fc92995c4bae38504a3f718cd0eff723dbc059d8b25f7ee5",
+    "LICENSE": "e03ba41d7fab20700769fe4118bab50d800cb74f990353a05d2f5fff1c228363",
+    "module.js": "34f5e8b25c4ffa93d11709c7ed8b7ce026d46c64d4731e8ece18610871434576",
+    "module.js.map": "687ef3b79b13ae5b5905f6de68625bdb7b28f65ea25c1cf41e813c5d17798cf4",
+    "plugin.json": "00e070371058b2d5f9341ee91cc633999fcdedc3bf48928db21c6cea1cf47230",
+    "README.md": "e6b6596e3b2f23078866ed44e66ba2d69d9c5b3c7436fbdadb1ccd7c667004d8"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.10
+Comment: https://openpgpjs.org
+
+wrgEARMKAAYFAmO+LVMAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm59cvAgjtwX8sPF/NJi536HfiwT/jbE0TAuvbQmdmJKenGrgy0wHLbGJ2
+TgW6FwbIuFQ9vhmVubCb6yhCPyXJEOTXVcqzewIJAaW85Qx6wHE9ZdmGGjCu
+Xlmz6VY/VzOJtMnGE2ctDfR7TRa8roCUceatJvAZZkIs/lDNXcf7qkLL1SeE
+V5gjA5JI
+=eNO+
+-----END PGP SIGNATURE-----

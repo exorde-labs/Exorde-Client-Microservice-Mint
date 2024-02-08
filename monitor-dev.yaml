@@ -2,6 +2,7 @@ version: '3'
 
 services:
   prometheus:
+    restart: always
     image: prom/prometheus:v2.48.0
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
@@ -9,6 +10,7 @@ services:
       - '9090:9090'
 
   grafana:
+    restart: always
     image: grafana/grafana:latest
     user: "1000"
     environment:
@@ -22,12 +24,14 @@ services:
       - ./grafana:/var/lib/grafana
 
   node-exporter:
+    restart: always
     image: prom/node-exporter:v1.2.2
     network_mode: host
     ports:
       - '9100:9100'
 
   cadvisor:
+    restart: always
     image: gcr.io/cadvisor/cadvisor:latest
     volumes:
       - /:/rootfs:ro
@@ -41,6 +45,7 @@ services:
       io.prometheus.port: '8080'
 
   jaeger:
+    restart: always
     image: jaegertracing/all-in-one:latest
     ports:
       - "5775:5775/udp"
@@ -53,3 +58,4 @@ services:
       - "9411:9411"
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+      AGENT_MAX_PACKET_SIZE: 400459

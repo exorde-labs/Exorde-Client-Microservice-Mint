@@ -5,6 +5,8 @@ from models import Classification, Translation
 class TooBigError(Exception):
     pass
 
+from opentelemetry import trace
+from opentelemetry.trace.status import Status, StatusCode
 
 def zero_shot(
     item: Translation, lab_configuration, max_depth=None, depth=0
@@ -30,17 +32,25 @@ def zero_shot(
         max_depth parameter was set, the path may not be complete.
     """
     # If max_depth is 0, return immediately with empty label and score 0
-    if max_depth == 0:
-        return Classification(label=str(""), score=float(0))
 
-    labeldict = lab_configuration["labeldict"]
-    classifier = lab_configuration["classifier"]
-    text_ = item.translation
-    texts = [text_]
-    keys = list(labeldict.keys())
+    tracer = trace.get_tracer(__name__)
 
-    # Perform first level of classification
-    output = classifier(texts, keys, multi_label=False, max_length=32)
+    with tracer.start_as_current_span("init") as init_span:
+        if max_depth == 0:
+            return Classification(label=str(""), score=float(0))
+
+        labeldict = lab_configuration["labeldict"]
+        classifier = lab_configuration["classifier"]
+        text_ = item.translation
+        texts = [text_]
+        keys = list(labeldict.keys())
+
+        init_span.set_status(StatusCode.OK)
+
+    with tracer.start_as_current_span("first_classification") as first_classification_span:
+        # Perform first level of classification
+        output = classifier(texts, keys, multi_label=False, max_length=32)
+        first_classification_span.set_status(StatusCode.OK)
 
     # If max_depth is 1, return after first level of classification
     if max_depth == 1:
@@ -58,9 +68,12 @@ def zero_shot(
         ]
         labels_list.append(labels)
 
-    # If max_depth not specified or larger than 1, perform second level of classification
-    keys = list(labeldict[labels_list[0][0]].keys())
-    output = classifier(texts, keys, multi_label=False, max_length=32)
-    return Classification(
-        label=output[0]["labels"][0], score=output[0]["scores"][0]
-    )
+    with tracer.start_as_current_span("second_classification") as second_classification_span:
+        # If max_depth not specified or larger than 1, perform second level of classification
+        keys = list(labeldict[labels_list[0][0]].keys())
+        output = classifier(texts, keys, multi_label=False, max_length=32)
+        output = Classification(
+            label=output[0]["labels"][0], score=output[0]["scores"][0]
+        )
+        second_classification.set_status(StatusCode.OK)
+    return output

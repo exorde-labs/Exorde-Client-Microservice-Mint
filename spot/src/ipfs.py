@@ -16,7 +16,7 @@ class EnumEncoder(json.JSONEncoder):
 
 async def upload_to_ipfs(
     value,
-    ipfs_path="http://ipfs-api.exorde.dev/add",
+    ipfs_path="http://ipfs-api.exorde.network/add",
 ) -> Union[str, None]:
     empty_content_flag = False
     for i in range(5):  # Retry up to 5 times
@@ -82,8 +82,7 @@ async def upload_to_ipfs(
 
 def rotate_gateways():
     gateways = [
-        "http://ipfs-gateway.exorde.dev/ipfs/",
-        #"http://ipfs-gateway.exorde.network/ipfs/",
+        "http://ipfs-gateway.exorde.network/ipfs/",
         # "https://w3s.link/ipfs/",
         # "https://ipfs.io/ipfs/",
         # "https://ipfs.eth.aragon.network/ipfs/",
