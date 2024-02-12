@@ -78,7 +78,7 @@ COPY spot/src/get_network_configuration.py /app/get_network_configuration.py
 
 RUN python3.10 -m spacy download en_core_web_trf
 
-RUN python3.10 pre_install.py 
+RUN python3.10 pre_install.py
 
 RUN pip3.10 install opentelemetry-api \
         opentelemetry-sdk \
@@ -86,11 +86,12 @@ RUN pip3.10 install opentelemetry-api \
         opentelemetry-instrumentation-aiohttp-client \
         opentelemetry-sdk opentelemetry-exporter-otlp
 
+
 FROM exorde_spotting_b as exorde_spotting
 
 ## INSTALL THE APP
 RUN rm -rf spot/src
 COPY spot/src/* /app
 
-## ENTRY POINT IS MAIN.PY
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+ENV TRANSFORMERS_OFFLINE=1

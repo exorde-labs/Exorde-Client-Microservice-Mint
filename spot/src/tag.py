@@ -7,7 +7,7 @@ from finvader import finvader
 from huggingface_hub import hf_hub_download
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
-import swifter
+import swifter, os
 from models import (
     Translation,
     LanguageScore,
@@ -176,23 +176,34 @@ def tag(documents: list[str], lab_configuration):
         tokenization_span.set_status(StatusCode.OK)
 
 
+    def load_cached_file(filepath):
+        with open(filepath, 'r') as file:
+            return json.load(file)
+
+    def get_cached_file_path(filename):
+        # Update the base cache directory to include the nested directories
+        base_cache_dir = os.path.join(os.getenv('HOME'), '.cache', 'huggingface', 'hub', 'models--ExordeLabs--SentimentDetection', 'snapshots', '0eac9e0d21db6f342d5492d5db727fb00c767c40')
+        filepath = os.path.join(base_cache_dir, filename)
+        if os.path.exists(filepath):
+            return filepath
+        else:
+            raise FileNotFoundError(f"{filename} not found in cache directory.")
+
     with tracer.start_as_current_span('sentiment_detection') as sentiment_span:
-        # Sentiment analysis using VADER
-        emoji_lexicon = hf_hub_download(
-            repo_id="ExordeLabs/SentimentDetection",
-            filename="emoji_unic_lexicon.json",
-        )
-        loughran_dict = hf_hub_download(
-            repo_id="ExordeLabs/SentimentDetection", filename="loughran_dict.json"
-        )
-        with open(emoji_lexicon) as f:
-            unic_emoji_dict = json.load(f)
-        with open(loughran_dict) as f:
-            Loughran_dict = json.load(f)
+        emoji_lexicon_path = get_cached_file_path('emoji_unic_lexicon.json')
+        loughran_dict_path = get_cached_file_path('loughran_dict.json')
+
+        # Corrected: Load the lexicons directly without unnecessary open statements
+        emoji_lexicon = load_cached_file(emoji_lexicon_path)
+        loughran_dict = load_cached_file(loughran_dict_path)
+
         sentiment_analyzer = SentimentIntensityAnalyzer()
-        sentiment_analyzer.lexicon.update(Loughran_dict)
-        sentiment_analyzer.lexicon.update(unic_emoji_dict)
-        sentiment_span.set_status(StatusCode.OK)
+        sentiment_analyzer.lexicon.update(loughran_dict)
+        sentiment_analyzer.lexicon.update(emoji_lexicon)
+
+        # Assuming setting status on sentiment_span is part of your tracing system
+        sentiment_span.set_status(StatusCode.OK)  # Adjust according to your tracing system's API
+
 
     with tracer.start_as_current_span('roberta_init') as roberta_init_span:
         ############################
