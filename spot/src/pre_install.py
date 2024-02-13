@@ -34,7 +34,8 @@ models = [
     "alimazhar-110/website_classification",
     "bert-large-uncased",
     "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis",
-    "lxyuan/distilbert-base-multilingual-cased-sentiments-student"
+    "lxyuan/distilbert-base-multilingual-cased-sentiments-student",
+    "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli"
 ]
 
 def install_hugging_face_models(models):

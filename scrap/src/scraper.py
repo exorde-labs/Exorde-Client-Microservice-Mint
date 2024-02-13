@@ -19,6 +19,12 @@ from importlib import import_module
 from scraper_configuration import get_scrapers_configuration
 from keywords import choose_keyword
 
+from aioprometheus.collectors import Counter
+
+push_counter = Counter("push", "Number of items pushed to spotting blades")
+
+
+
 def setup_tracing(module: str):
     resource = Resource(attributes={
         ResourceAttributes.SERVICE_NAME: module
@@ -117,10 +123,9 @@ async def scraping_task(app):
                 wait.record_exception(e)
                 item = None
                 logging.exception("An error occured while iterating")
-
         if item:
             await push_item(os.getenv('spotting_target'), item)
-            
+            push_counter.inc({})
         await asyncio.sleep(1)
 
 async def start_scraping_task(app):

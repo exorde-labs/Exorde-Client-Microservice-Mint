@@ -45,18 +45,18 @@ async def spot_data(
             estimated_transaction = await estimate_gas(
                 transaction, read_web3, gas_cache, configuration
             )
-
             signed_transaction = read_web3.eth.account.sign_transaction(
                 estimated_transaction, worker_account.key.hex()
             )
             transaction_hash = await write_web3.eth.send_raw_transaction(
                 signed_transaction.rawTransaction
             )
-            logging.info(f"[Spot Data] transaction sent")
+            logging.info(f"Transaction sent : {transaction_hash.hex()}")
             return transaction_hash, previous_nonce
 
         except ValueError as ve:
             if "balance is too low" in ve.args[0].get("message", ""):
+                logging.info("Balance is to low - FAUCETING")
                 # Account balance is too low
                 for i in range(0, 3):
                     try:

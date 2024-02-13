@@ -33,5 +33,7 @@ async def commit_analyzed_batch(processed_batch, app):
                 transaction_hash, previous_nonce, app["static_configuration"]
             )
             logging.info("COMMIT OK")
-    except:
+            return transaction_hash, cid
+    except Exception as e:
         logging.exception("An error occured while commiting a batch")
+        raise e

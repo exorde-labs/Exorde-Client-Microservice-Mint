@@ -11,6 +11,7 @@ def terminate(signal, frame):
 
 from get_static_configuration import get_static_configuration, StaticConfiguration
 from get_live_configuration import get_live_configuration, LiveConfiguration
+from claim_master import claim_master
 
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -23,8 +24,13 @@ from opentelemetry.sdk.trace import TracerProvider
 
 from aioprometheus.collectors import Counter
 
+
 receipt_count = Counter(
     "transactioneer_receipt",
+    "Amount of receipts received from the protocol"
+)
+receipt_count_populated = Counter(
+    "transactioneer_receipt_populated",
     "Amount of receipts received from the protocol"
 )
 
@@ -94,18 +100,20 @@ async def create_task(items, app):
     tracer = trace.get_tracer(__name__)
     global receipt_count
     logging.info("CREATING commit")
-    try:
-        with tracer.start_as_current_span("commit_analyzed_batch") as commit_analyzed_batch_span:
-            await commit_analyzed_batch({"items": items, "kind": "SPOTTING"}, app)
+    with tracer.start_as_current_span("commit_analyzed_batch") as commit_analyzed_batch_span:
+        try:
+            transaction_hash, cid = await commit_analyzed_batch({"items": items, "kind": "SPOTTING"}, app)
             commit_analyzed_batch_span.set_status(StatusCode.OK)
+            commit_analyzed_batch_span.set_attribute("CID", cid)
+            commit_analyzed_batch_span.set_attribute("TX", transaction_hash.hex())
             receipt_count.inc({})
+            receipt_count_populated.inc({ "CID": cid, "TX": transaction_hash.hex() })
             logging.info("COMMIT OK")
-    except:
-        logging.info("COMMIT FAILED")
-        logging.exception("An Error occured commiting analyzed batch")
-        commit_analyzed_batch_span.record_exception(e)
-        commit_analyzed_batch_span.set_status(StatusCode.ERROR, "Failed to send processed item")
-    
+        except Exception as e:
+            logging.info("COMMIT FAILED")
+            logging.exception("An Error occured commiting analyzed batch")
+            commit_analyzed_batch_span.record_exception(e)
+            commit_analyzed_batch_span.set_status(StatusCode.ERROR, "Failed to send processed item")
 
 async def make_transaction(request):
     global TASKS
@@ -126,6 +134,20 @@ app.router.add_get('/', healthcheck)
 async def start_background_tasks(app):
     app['monitor_task'] = asyncio.create_task(monitor_tasks())
 
+async def do_claim_master(app):
+    tracer = trace.get_tracer(__name__)
+    await asyncio.sleep(3)
+    with tracer.start_as_current_span("claim_master") as claim_master_span:
+        try:
+            await claim_master(app['main_address'], app['static_configuration'], app['live_configuration'])
+            claim_master_span.set_status(StatusCode.OK)
+            logging.info("CLAIM MASTER OK")
+        except Exception as e:
+            logging.exception("An error occured while claiming master")
+            claim_master_span.record_exception(e)
+            claim_master_span.set_status(StatusCode.ERROR, "Failed to Claim Master")
+
+
 def start_transactioneer():
     setup_tracing()
     logging.basicConfig(
@@ -133,13 +155,19 @@ def start_transactioneer():
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
     port = int(os.environ.get("PORT", "7991"))
-    logging.info(f"Hello World! I'm TRANSACTIONEER running on {port}")
+    main_address = os.environ["main_address"]
+    logging.info(f"Hello World! I'm TRANSACTIONEER running on {port} with {main_address}")
     signal.signal(signal.SIGINT, terminate)
     signal.signal(signal.SIGTERM, terminate)
 
     logging.info(f"Starting server on {port}")
     app.on_startup.append(configuration_init)
     app.on_startup.append(start_background_tasks)
+    app.on_startup.append(do_claim_master)
+    app['main_address'] = main_address
+
+
+
     try:
         asyncio.run(web._run_app(app, port=port, handle_signals=True))
     except KeyboardInterrupt:

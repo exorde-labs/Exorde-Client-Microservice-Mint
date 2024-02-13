@@ -2,6 +2,8 @@ version: '3'
 
 services:
   transactioneer:
+    volumes:
+      - ./config:/root/.config
     restart: always
     ports:
       - "7991:7991"
