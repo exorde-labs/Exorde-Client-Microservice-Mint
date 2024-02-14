@@ -125,7 +125,7 @@ async def scraping_task(app):
                 logging.exception("An error occured while iterating")
         if item:
             await push_item(os.getenv('spotting_target'), item)
-            push_counter.inc({})
+            push_counter.inc({"module": app["module_name"]})
         await asyncio.sleep(1)
 
 async def start_scraping_task(app):

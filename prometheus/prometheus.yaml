@@ -33,7 +33,7 @@ scrape_configs:
       - batch_processor:7999
       - transactioneer:7991
       - cadvisor:8080
-      - youtube:8001
-      - weibo:8002
-      - rss:8003
-      - hn:8004
+      - youtube:8000
+      - weibo:8000
+      - rss:8000
+      - hn:8000

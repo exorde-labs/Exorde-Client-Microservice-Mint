@@ -1,3 +1,5 @@
+import logging
+
 async def claim_master(
     main_address_to_claim, static_configuration, live_configuration
 ):
