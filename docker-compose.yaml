@@ -68,3 +68,4 @@ services:
           memory: 6G
         reservations:
           memory: 6G
+        # GPU access configuration

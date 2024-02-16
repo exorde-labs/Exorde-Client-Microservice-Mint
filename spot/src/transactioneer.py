@@ -1,10 +1,12 @@
 
-from aiohttp import web
+from aiohttp import web, ClientSession
 from commit_analyzed_batch import commit_analyzed_batch
 import logging
 import os
 import signal
 import asyncio
+import time
+import json
 
 def terminate(signal, frame):
     os._exit(0)
@@ -22,7 +24,7 @@ from opentelemetry.trace import StatusCode
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace import TracerProvider
 
-from aioprometheus.collectors import Counter
+from aioprometheus.collectors import Counter, Gauge
 
 
 receipt_count = Counter(
@@ -32,6 +34,18 @@ receipt_count = Counter(
 receipt_count_populated = Counter(
     "transactioneer_receipt_populated",
     "Amount of receipts received from the protocol"
+)
+sent_items_count = Counter(
+    "sent_items_count",
+    "Amount of items commited to the network"
+)
+leaderboard_score = Gauge(
+    "leaderboard",
+    "Exorde leaderboard score"
+)
+leaderboard_rank = Gauge(
+    "leaderboard_rank",
+    "Exorde leaderboard rank"
 )
 
 
@@ -58,8 +72,28 @@ async def metrics(request):
     return web.Response(body=content, headers=http_headers)
 
 
+async def get_leaderboard(app):
+    logging.info("Retrieving leaderboard")
+    async with ClientSession() as session:
+        async with session.get(
+            "https://raw.githubusercontent.com/exorde-labs/TestnetProtocol/main/Stats/leaderboard.json"
+        ) as response:
+            data = await response.text()
+            data = json.loads(data)
+            for rank, addr in enumerate(data, start=1):
+                if data[addr] != 0:
+                    leaderboard_score.set(
+                        { "address": addr, "rank": rank },
+                        data[addr]
+                    )
+                    leaderboard_rank.set(
+                        { "address": addr, "rep": data[addr] }, rank
+                    )
+            logging.info("Leaderboard updated")
+
 TASKS = []
-async def monitor_tasks():
+async def monitor_tasks(app):
+    last_leaderboard_fetch = time.time()
     while True:
         for task in list(TASKS):
             if task.done():
@@ -70,6 +104,16 @@ async def monitor_tasks():
                     # Process result if needed
                 except Exception as e:
                     logging.exception("Task resulted in exception", exc_info=e)
+
+        # Check if it's time to fetch the leaderboard
+        if time.time() - last_leaderboard_fetch >= 300:  # 300 seconds = 5 minutes
+            try:
+                await get_leaderboard(app)
+            except:
+                logging.exception("An error occured while retrieving leaderboard")
+            
+            last_leaderboard_fetch = time.time()
+
         await asyncio.sleep(1)  # Sleep for some time before checking again
 
 
@@ -98,8 +142,10 @@ app.router.add_get('/metrics', metrics)
 
 async def create_task(items, app):
     tracer = trace.get_tracer(__name__)
-    global receipt_count
-    logging.info("CREATING commit")
+    global receipt_count, sent_items_count
+    logging.info(f"CREATING commit with {len(items)} items to push")
+    for item in items:
+        sent_items_count.inc({})
     with tracer.start_as_current_span("commit_analyzed_batch") as commit_analyzed_batch_span:
         try:
             transaction_hash, cid = await commit_analyzed_batch({"items": items, "kind": "SPOTTING"}, app)
@@ -132,7 +178,7 @@ app.router.add_post('/commit', make_transaction)
 app.router.add_get('/', healthcheck)
 
 async def start_background_tasks(app):
-    app['monitor_task'] = asyncio.create_task(monitor_tasks())
+    app['monitor_task'] = asyncio.create_task(monitor_tasks(app))
 
 async def do_claim_master(app):
     tracer = trace.get_tracer(__name__)
@@ -164,6 +210,7 @@ def start_transactioneer():
     app.on_startup.append(configuration_init)
     app.on_startup.append(start_background_tasks)
     app.on_startup.append(do_claim_master)
+    app.on_startup.append(get_leaderboard)
     app['main_address'] = main_address
 
 

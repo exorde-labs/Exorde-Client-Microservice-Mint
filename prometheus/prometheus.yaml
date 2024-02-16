@@ -37,3 +37,6 @@ scrape_configs:
       - weibo:8000
       - rss:8000
       - hn:8000
+      - forocoches:8000
+      - followin:8000
+      - reddit:8000

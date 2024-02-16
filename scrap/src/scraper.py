@@ -72,11 +72,16 @@ async def get_parameters(scrap_module_name):
 async def get_generator(app):
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span("get_generator") as get_generator_span:
-        module = app["scraper_module"]
-        module_name = app["module_name"]
-        parameters = await get_parameters(module)
-        generator = iterator = module.query(parameters).__aiter__()
-        get_generator_span.set_status(StatusCode.OK)
+        try:
+            module = app["scraper_module"]
+            module_name = app["module_name"]
+            parameters = await get_parameters(module)
+            generator = iterator = module.query(parameters).__aiter__()
+            get_generator_span.set_status(StatusCode.OK)
+        except Exception as e:
+            get_generator_span.record_exception(e)
+            logging.exception("A critical error occured while instantiating a scraping module")
+            os._exit(-1)
     return generator
 
 
