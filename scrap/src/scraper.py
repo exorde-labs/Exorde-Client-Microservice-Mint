@@ -68,6 +68,7 @@ async def get_parameters(scrap_module_name):
     }
     parameters.update(generic_modules_parameters)
     parameters.update(specific_parameters)
+    return parameters
 
 async def get_generator(app):
     tracer = trace.get_tracer(__name__)

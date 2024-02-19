@@ -169,3 +169,20 @@ services:
       resources:
         limits:
           memory: 4G
+  twitter:
+    restart: always
+    ports:
+      - "8009:8000"
+    build:
+      dockerfile: ./scrap/Dockerfile
+    init: true
+    working_dir: /app/
+    command: python3.10 /app/scraper.py
+    environment:
+      - PORT=8000
+      - scraper_module=a7df32de3a60dfdb7a0b
+      - spotting_target=http://processor:7998
+    deploy:
+      resources:
+        limits:
+          memory: 4G

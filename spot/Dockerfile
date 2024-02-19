@@ -1,14 +1,50 @@
-FROM python:3.10.11 as base
+FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04 as base
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND noninteractive
+
+# Preconfigure selected timezone
+RUN echo 'tzdata tzdata/Areas select Europe' | debconf-set-selections \
+    && echo 'tzdata tzdata/Zones/Europe select Berlin' | debconf-set-selections
 
 
-# Update and install dependencies
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y chromium chromium-driver xvfb \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/chromedriver  /usr/local/bin/chromedriver
+# Install dependencies required for compiling Python
+RUN apt-get update && apt-get install -y \
+    wget \
+    build-essential \
+    libffi-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    liblzma-dev \
+    git
 
+# Download and compile Python 3.10
+RUN cd /tmp && \
+    wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && \
+    tar -xzf Python-3.10.4.tgz && \
+    cd Python-3.10.4 && \
+    ./configure --enable-optimizations && \
+    make -j 8 && \
+    make altinstall
+
+FROM base as exorde_spotting_aa
+
+# Ensure pip is up-to-date for the compiled Python 3.10
+RUN python3.10 -m ensurepip
+RUN python3.10 -m pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install pybind11 and other Python dependencies
+RUN python3.10 -m pip install --no-cache-dir pybind11
 
 RUN pip3.10 install --no-cache-dir --upgrade 'git+https://github.com/JustAnotherArchivist/snscrape.git'
 RUN pip3.10 install --no-cache-dir \
@@ -49,7 +85,7 @@ RUN pip3.10 install --no-cache-dir \
         yake==0.4.8 \
         argostranslate==1.8.0
 
-FROM base as exorde_spotting_a
+FROM exorde_spotting_aa as exorde_spotting_a
 
 RUN pip3.10 install skops \
         wtpsplit==1.2.3 

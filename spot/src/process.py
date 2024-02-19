@@ -84,7 +84,7 @@ def process(
                 logging.error(err)
                 logging.error(json.dumps(translation, indent=4))
                 raise err
-        
+
         logging.info(translation)
         return Processed(
             item=item,

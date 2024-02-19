@@ -296,4 +296,4 @@ async def choose_keyword(
     result = await default_choose_keyword()
     alg = 'old'
     keyword_counter.inc({"keyword": result, "alg": alg})
-    return (result, alg)
+    return result

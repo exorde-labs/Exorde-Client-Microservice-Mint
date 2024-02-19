@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   transactioneer:
@@ -44,6 +44,10 @@ services:
           memory: 6G
         reservations:
           memory: 6G
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   processor:
     restart: always
     ports:
@@ -68,4 +72,7 @@ services:
           memory: 6G
         reservations:
           memory: 6G
-        # GPU access configuration
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
