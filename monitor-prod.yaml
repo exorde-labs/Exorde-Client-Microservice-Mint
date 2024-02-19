@@ -17,8 +17,8 @@ services:
       GF_SECURITY_ADMIN_USER: 'exorde-admin'
       GF_SECURITY_ADMIN_PASSWORD: '6r17'
       GF_SERVER_PROTOCOL: 'https'
-      GF_SERVER_CERT_FILE: '/etc/certs/fullchain4.pem'
-      GF_SERVER_CERT_KEY: '/etc/certs/privkey4.pem'
+      GF_SERVER_CERT_FILE: '/etc/cert/fullchain4.pem'
+      GF_SERVER_CERT_KEY: '/etc/cert/privkey4.pem'
     depends_on:
       - prometheus
     ports:
