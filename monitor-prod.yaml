@@ -16,16 +16,22 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: 'exorde-admin'
       GF_SECURITY_ADMIN_PASSWORD: '6r17'
-      GF_SERVER_PROTOCOL: 'https'
-      GF_SERVER_CERT_FILE: '/etc/ssl/certs/fullchain.pem'
-      GF_SERVER_CERT_KEY: '/etc/ssl/certs/privkey.pem'
+      GF_ALLOW_SIGN_UP: false
     depends_on:
       - prometheus
+    volumes:
+      - ./grafana-prod:/var/lib/grafana
+      - /etc/cert/:/etc/cert:ro
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
     ports:
+      - '80:80'
       - '443:443'
     volumes:
-      - ./grafana:/var/lib/grafana
-      - /etc/letsencrypt/live/node.exorde.dev:/etc/ssl/certs:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile
 
   node-exporter:
     restart: always
