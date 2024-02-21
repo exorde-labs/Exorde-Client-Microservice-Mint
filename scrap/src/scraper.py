@@ -13,7 +13,7 @@ from opentelemetry.trace import StatusCode
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace import TracerProvider
 
-import logging, os, signal, asyncio
+import logging, os, signal, asyncio, random
 from importlib import import_module
 
 from scraper_configuration import get_scrapers_configuration
@@ -99,6 +99,10 @@ async def push_item(url, item):
                 logging.exception("An error occured while pushing an item")
                 push_item_span.record_exception(e)
 
+def get_target():
+    targets = os.getenv('spotting_target', '').split(',')
+    return random.choice(targets)
+
 async def scraping_task(app):
     tracer = trace.get_tracer(__name__)
     generator = None
@@ -130,7 +134,7 @@ async def scraping_task(app):
                 item = None
                 logging.exception("An error occured while iterating")
         if item:
-            await push_item(os.getenv('spotting_target'), item)
+            await push_item(get_target(), item)
             push_counter.inc({"module": app["module_name"]})
         await asyncio.sleep(1)
 

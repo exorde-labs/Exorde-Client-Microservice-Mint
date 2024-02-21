@@ -23,7 +23,7 @@ services:
       - bitcointalk4de40ec26=1
       - jvc8439846094ced03ff=1
       - a7df32de3a60dfdb7a0b=1
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
@@ -42,7 +42,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=youtube00e1f862e5eff
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
@@ -59,7 +59,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=wei223be19ab11e891bo
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
@@ -76,7 +76,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=rss007d0675444aa13fc
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
 
     deploy:
       resources:
@@ -94,7 +94,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=hackbc9419ab11eebe56
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
 
     deploy:
       resources:
@@ -112,7 +112,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=ch4875eda56be56000ac
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
 
     deploy:
       resources:
@@ -130,7 +130,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=ap98j3envoubi3fco1kc
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
@@ -147,7 +147,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=ap98j3envoubi3fco1kc
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
@@ -164,7 +164,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=followinc645fc950d7f
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
@@ -181,7 +181,7 @@ services:
     environment:
       - PORT=8000
       - scraper_module=a7df32de3a60dfdb7a0b
-      - spotting_target=http://processor:7998
+      - spotting_target=http://processor:7998,http://processorb:7998
     deploy:
       resources:
         limits:
