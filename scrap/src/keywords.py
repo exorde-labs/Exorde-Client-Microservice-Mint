@@ -5,8 +5,10 @@ from scraper_configuration import ScraperConfiguration
 
 from aioprometheus.collectors import Counter
 
+from opentelemetry import trace
+from opentelemetry.trace.status import Status
+from opentelemetry.trace import StatusCode
 
-keyword_counter = Counter("keyword", "choosen keyword")
 
 
 FALLBACK_DEFAULT_LIST = [
@@ -30,8 +32,6 @@ KEYWORDS_URL = "https://raw.githubusercontent.com/exorde-labs/TestnetProtocol/ma
 JSON_FILE_PATH = "keywords.json"
 KEYWORDS_UPDATE_INTERVAL = 5 * 60  # 5 minutes
 
-blade_logger = logging.getLogger('blade')
-
 ## READ KEYWORDS FROM SOURCE OF TRUTH
 async def fetch_keywords(keywords_raw_url) -> str:
     for i in range(0, 10):
@@ -43,7 +43,7 @@ async def fetch_keywords(keywords_raw_url) -> str:
                 ) as response:
                     return await response.text()
         except Exception as e:
-            blade_logger.info(
+            logging.info(
                 "[KEYWORDS] Failed to download keywords.txt from Github repo exorde-labs/TestnetProtocol: %s",
                 e,
             )
@@ -97,7 +97,7 @@ async def get_keywords():
                 if ts - last_update_ts < KEYWORDS_UPDATE_INTERVAL:
                     return data.get("keywords", [])
         except Exception as e:
-            blade_logger.info(f"[KEYWORDS] Error during reading the JSON file: {e}")
+            logging.info(f"[KEYWORDS] Error during reading the JSON file: {e}")
 
     # If execution reaches here, it means either JSON file does not exist
     # or the last update was more than 5 minutes ago. So, we attempt to fetch the keywords from the URL.
@@ -113,7 +113,7 @@ async def get_keywords():
         save_keywords_to_json(keywords)
         return keywords
     except Exception as e:
-        blade_logger.info(
+        logging.info(
             f"[KEYWORDS] Error during the processing of the keywords list: {e}"
         )
 
@@ -126,11 +126,11 @@ async def get_keywords():
                 data = json.load(json_file)
                 return data.get("keywords", [])
         except Exception as e:
-            blade_logger.info(f"[KEYWORDS] Error during reading the JSON file: {e}")
+            logging.info(f"[KEYWORDS] Error during reading the JSON file: {e}")
     # If execution reaches here, it means either JSON file does not exist
     # or there was an error during reading the JSON file.
     # Return the fallback default list.
-    blade_logger.info(f"[KEYWORDS] Returning default fallback list")
+    logging.info(f"[KEYWORDS] Returning default fallback list")
     return FALLBACK_DEFAULT_LIST
 
 
@@ -164,14 +164,14 @@ def create_topic_lang_fetcher(refresh_frequency: int = 3600):
                         data = json.loads(await response.text())
                         cached_data = data
                         last_fetch_time = current_time
-                        blade_logger.info(
+                        logging.info(
                             "Data refreshed at: %s",
                             time.strftime(
                                 "%Y-%m-%d %H:%M:%S", time.localtime()
                             ),
                         )
             except Exception as e:
-                blade_logger.error("Error fetching data: %s", str(e))
+                logging.error("Error fetching data: %s", str(e))
         if not cached_data:
             raise Exception("Could not download topics")
         else:
@@ -184,7 +184,7 @@ topic_lang_fetcher = create_topic_lang_fetcher()
 
 
 async def choose_translated_keyword(
-    module_path: str, scraper_configuration: ScraperConfiguration
+    scrap_module_name: str, scraper_configuration: ScraperConfiguration
 ):
     """
     New keyword_choose alg takes into account the module language and translated
@@ -195,61 +195,66 @@ async def choose_translated_keyword(
     """
 
     """retrieve the topic lang data"""
-    try:
-        topic_lang: dict[str, dict[str, list[str]]] = await topic_lang_fetcher()
-        """Get a random topic"""
-        # retrieve list of topics
-        topics: list[str] = list(topic_lang.keys())
-        assert len(topics), "Retrieved topics are empty"
-        choosed_topic = random.choice(topics)
-    except:
-        blade_logger.exception(
-            "while retrieving topic-lang in choose_translated_keyword, using fall-back"
-        )
-        return random.choice(FALLBACK_DEFAULT_LIST)
-    try:
-        """
-        retrieve available languages for the specified topic,  filter out topics
-        with empty translations 
-        """
-        topic_languages = [
-            lang for lang in list(
-                topic_lang[choosed_topic].keys()
-            ) if len(topic_lang[choosed_topic][lang])
-        ]
-        assert len(topic_languages), "Topic has no translation"
-
-        """retrieve available languages for the specified module_path"""
-        # lang_map[module_hash]
-        def extract_project_name(url):
-            return url.rstrip('/').split('/')[-1]
-        module_hash = extract_project_name(module_path) 
-        module_languages = scraper_configuration.lang_map[module_hash]
-        assert len(module_languages), "Scraper module does not support topic-lang"
-
-        if module_languages == ["all"]:
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("choose_translated_keyword") as choose_translated_keyword_span:
+        try:
+            topic_lang: dict[str, dict[str, list[str]]] = await topic_lang_fetcher()
+            """Get a random topic"""
+            # retrieve list of topics
+            topics: list[str] = list(topic_lang.keys())
+            assert len(topics), "Retrieved topics are empty"
+            choosed_topic = random.choice(topics)
+        except:
+            logging.exception(
+                "while retrieving topic-lang in choose_translated_keyword, using fall-back"
+            )
+            return random.choice(FALLBACK_DEFAULT_LIST)
+        try:
             """
-            module language compat can be set to `all` in which case every 
-            language is considered
+            retrieve available languages for the specified topic,  filter out topics
+            with empty translations 
             """
-            intercompatible_languages = topic_languages
-        else:
-            """Determin languages that are scraper compatible and translated"""
-            intercompatible_languages = [
-                lang for lang in topic_languages if lang in module_languages
+            topic_languages = [
+                lang for lang in list(
+                    topic_lang[choosed_topic].keys()
+                ) if len(topic_lang[choosed_topic][lang])
             ]
+            assert len(topic_languages), "Topic has no translation"
 
-        # if there is no match we fall back using the topic
-        assert len(intercompatible_languages), "No language intercompatible"
+            """retrieve available languages for the specified scrap_module_path"""
+            # lang_map[module_hash]
+            module_languages = scraper_configuration.lang_map[scrap_module_name]
+            assert len(module_languages), "Scraper module does not support topic-lang"
 
-        # else we have a translated keyword by choosing an item in the list
-        return random.choice(intercompatible_languages)
-    except (KeyError, AssertionError):
-        blade_logger.exception(
-            "Error while using topic-lang algorithm, using topic"
-        )
-        # if there is no match we fall back using the topic
-        return choosed_topic
+            if module_languages == ["all"]:
+                """
+                module language compat can be set to `all` in which case every 
+                language is considered
+                """
+                intercompatible_languages = topic_languages
+            else:
+                """Determin languages that are scraper compatible and translated"""
+                intercompatible_languages = [
+                    lang for lang in topic_languages if lang in module_languages
+                ]
+
+            # if there is no match we fall back using the topic
+            assert len(intercompatible_languages), "No language intercompatible"
+
+            choose_translated_keyword_span.set_status(StatusCode.OK)
+            # else we have a translated keyword by choosing an item in the list
+            logging.info(f"intercompatible_languages: {intercompatible_languages}")
+            choosen_language = random.choice(intercompatible_languages)
+            choosen_translated_keyword = random.choice(topic_lang[choosed_topic][choosen_language])
+            return choosen_translated_keyword
+        except (KeyError, AssertionError) as e:
+            choose_translated_keyword_span.set_status(Status(StatusCode.ERROR))
+            choose_translated_keyword_span.record_exception(e)
+            logging.exception(
+                "Error while using topic-lang algorithm, using topic"
+            )
+            # if there is no match we fall back using the topic
+            return choosed_topic
 
 
 async def default_choose_keyword():
@@ -263,9 +268,10 @@ Notes:
     - there is currently two formats of keywords used which are feature-flipped
     and used interchangably ; both are being currently researched on
 """
+keyword_counter = Counter("keyword", "keyword used to scrap")
 
 async def choose_keyword(
-    module_path: str,
+    scrap_module_path: str,
     scraper_configuration: ScraperConfiguration,
 ) -> Tuple[str, str]:
     """Feature-flipped with a threshold cursor"""
@@ -283,17 +289,21 @@ async def choose_keyword(
     | . . . . c . . |
 
     """
+    logging.debug(f" random_number: {random_number} ; algorithm_choose_cursor: {algorithm_choose_cursor}")
+    random_number = 1
     if random_number <= algorithm_choose_cursor:
         try:
             result = await choose_translated_keyword(
-                module_path, scraper_configuration
+                scrap_module_path, scraper_configuration
             )
             alg = 'new'
         except:
-            blade_logger.exception("An unhandled error occured in choose_translated_keyword")
+            logging.exception("An unhandled error occured in choose_translated_keyword")
             result = await default_choose_keyword()
             alg = 'old'
-    result = await default_choose_keyword()
-    alg = 'old'
+    else:
+        result = await default_choose_keyword()
+        alg = 'old'
+    logging.info(f"choosed new keyword '{result}' (alg: {alg})")
     keyword_counter.inc({"keyword": result, "alg": alg})
     return result

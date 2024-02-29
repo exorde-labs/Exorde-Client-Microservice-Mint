@@ -1,0 +1,53 @@
+{
+    "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+    "type": "datasource",
+    "name": "JSON Fetcher",
+    "id": "nagasudhirpulla-api-datasource",
+    "metrics": true,
+    "backend": true,
+    "alerting": true,
+    "executable": "gpx_nagasudhirpulla-api-datasource",
+    "info": {
+        "description": "",
+        "author": {
+            "name": "Nagasudhir",
+            "url": "https://github.com/nagasudhirpulla"
+        },
+        "keywords": [
+            "backend datasource",
+            "api"
+        ],
+        "logos": {
+            "small": "img/logo.svg",
+            "large": "img/logo.svg"
+        },
+        "links": [{
+                "name": "Website",
+                "url": "https://github.com/nagasudhirpulla/grafana-api-backend-datasource"
+            },
+            {
+                "name": "License",
+                "url": "https://github.com/nagasudhirpulla/grafana-api-backend-datasource/blob/main/LICENSE"
+            }
+        ],
+        "screenshots": [{
+                "name": "Plugin Settings",
+                "path": "img/plugin-settings-example.png"
+            },
+            {
+                "name": "Query Editor",
+                "path": "img/query-editor-example.png"
+            },
+            {
+                "name": "Query Payload",
+                "path": "img/query-inspector-payload-example.png"
+            }
+        ],
+        "version": "1.2.4",
+        "updated": "2023-01-11"
+    },
+    "dependencies": {
+        "grafanaDependency": ">=8.0.5",
+        "plugins": []
+    }
+}

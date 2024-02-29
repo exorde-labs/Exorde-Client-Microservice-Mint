@@ -50,6 +50,8 @@ async def _get_scraper_configuration() -> ScraperConfiguration:
                 return transformed_list
             module_list = transform_module_urls(enabled_modules) 
 
+            logging.info(f"Lang Map is : {json_data['lang_map']}")
+
             return ScraperConfiguration(
                 enabled_modules=enabled_modules,
                 module_list=module_list,

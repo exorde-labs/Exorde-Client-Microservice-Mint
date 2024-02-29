@@ -52,7 +52,7 @@ def terminate(signal, frame):
 SHUTDOWN = False
 
 
-async def get_parameters(scrap_module_name):
+async def get_parameters(module, scrap_module_name):
     scraper_configuration = await get_scrapers_configuration()
     choosen_module_path = f"https://github.com/exorde-labs/{scrap_module_name}"
     generic_modules_parameters = scraper_configuration.generic_modules_parameters
@@ -60,8 +60,8 @@ async def get_parameters(scrap_module_name):
         choosen_module_path, {}
     )
     keyword = await choose_keyword(
-        choosen_module_path, scraper_configuration
-    )    
+        scrap_module_name, scraper_configuration
+    )
     parameters = {
         "url_parameters": {"keyword": keyword},
         "keyword": keyword,
@@ -76,7 +76,9 @@ async def get_generator(app):
         try:
             module = app["scraper_module"]
             module_name = app["module_name"]
-            parameters = await get_parameters(module)
+            logging.info(f"module name is {app['module_name']}")
+            parameters = await get_parameters(module, module_name)
+            logging.info(f"Parameters are : {parameters}")
             generator = iterator = module.query(parameters).__aiter__()
             get_generator_span.set_status(StatusCode.OK)
         except Exception as e:
@@ -95,7 +97,7 @@ async def push_item(url, item):
                 await session.post(url, json=item)
                 push_item_span.set_status(StatusCode.OK)
             except Exception as e:
-                push_item_span.set_status(Status(StatusCode.ERROR, str(e)))
+                push_item_span.set_status(Status(StatusCode.ERROR))
                 logging.exception("An error occured while pushing an item")
                 push_item_span.record_exception(e)
 
@@ -107,6 +109,7 @@ async def scraping_task(app):
     tracer = trace.get_tracer(__name__)
     generator = None
     while not SHUTDOWN:
+        logging.info("scraping loop")
         if not generator:
             generator = await get_generator(app)
 

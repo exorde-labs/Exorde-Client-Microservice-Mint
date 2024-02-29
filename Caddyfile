@@ -1,3 +1,0 @@
-node.exorde.dev {
-    reverse_proxy grafana:3000
-}

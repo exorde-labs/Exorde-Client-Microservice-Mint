@@ -1,0 +1,44 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "grafana",
+  "signedByOrg": "grafana",
+  "signedByOrgName": "Grafana Labs",
+  "plugin": "yesoreyeram-infinity-datasource",
+  "version": "2.3.1",
+  "time": 1701179524955,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "CHANGELOG.md": "a97d37fa4f810201cfa4858f116767c80a6476f00e76ff80d50d5ac6e2546e1b",
+    "LICENSE": "85fb2c20b586ef9dc00ee5c41140e1cd59fdded9a0b24a9054b04e9f0f6b2977",
+    "README.md": "42c55ba4fc53a738e1f3ddd0d8f5214a18536994fd5150129088a19ed786d0a0",
+    "go_plugin_build_manifest": "11793e23b9d04753ae581433385ff5ef26b7098b11d58e4740f2b4957c478ff8",
+    "gpx_infinity_linux_amd64": "5849e17364a74b1a041d2f20cad0e8fc19862323f92012a628103794e12d72d8",
+    "img/aws.jpg": "e682ccc794708fd3eb32a3fb5e2bcccd8ff3b54f30eba2086fd1b28a82020d81",
+    "img/homepage-bg.svg": "97ec32b2c542bcb63b7fa7659e42a876a5b9ec00aef7a486f2dc41b83d7d9eb8",
+    "img/icon.svg": "e498b00e1cc3c9e8b65a2b8320b7d170c6da61d424fe5f3f3fdf9963204449ae",
+    "img/oauth-2-sm.png": "9945bb307d5545369d50381acc97d48b4a98433831f14e99eb839f0970a91258",
+    "img/slide-features.png": "58aba3b2f2d73ee99945cba9746463f0039d8afb5366ed8d42db62145b914d0f",
+    "img/slide-rest-api.png": "cf72349768e0ccf19a856d86e97c8e67dcdadfcee49e73ae5acbe781c3ae0c79",
+    "img/slide-series.png": "f7d523c39f9d4567974c37432f047e4e8944cb92dc2c9a4424757ce5e54dc3a7",
+    "img/slide-variables.png": "8ed0cd7b1ac00bd2c7fa6e72c513b678c39ba7d63030f06e8695cb1d352e3b34",
+    "module.js": "0befa048466221cff64cbbc04a83c3ba4b7488341c45cd8633254e93ff9bd12a",
+    "module.js.LICENSE.txt": "99be0382b70276cfb5fa192a434dcddf0c6ff30ea66b80404f2eacd27906fc81",
+    "module.js.map": "6248234d607d5ed997872d90e0578b5e56197c30336d75284515391262a862d4",
+    "plugin.json": "022d764295a7c6bbc6d1aa10d3a84195c6620e86ffbe5d2a66af05c9d5009358"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.10
+Comment: https://openpgpjs.org
+
+wrcEARMKAAYFAmVl8IUAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm5xh6Agd+gaZO53Uyy+HuRfjGvx7fPrGtHDrF3HyO4bAGFvsa0i6qoIdF
+j9BkLoRtU406Qly77RCgkUVkSkWToSAvkts4ugII+cXWAlWghHl57jK1vWc+
+4dher35SZ5cjfLueLWDOd96mQl3qurBLtmE4h2TaXvQ8s+3O/J65+DX8phmd
+MDWxeBc=
+=OG4g
+-----END PGP SIGNATURE-----
