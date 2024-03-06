@@ -2,14 +2,15 @@
 
 from wtpsplit import WtP # wtpsplit/issues/10
 
-import logging, os
+import logging, os, signal, time, random
 
 import asyncio
-import signal
 from aioprometheus.collectors import REGISTRY
 from aioprometheus.renderer import render
 from aiohttp import web, ClientSession
-import time
+
+from concurrent.futures import ThreadPoolExecutor
+import threading
 
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -19,22 +20,20 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.semconv.resource import ResourceAttributes
 from opentelemetry.trace.status import Status
 from opentelemetry.trace import StatusCode
+from aioprometheus.collectors import Counter, Histogram, Gauge
 
-import threading
-
-
-from exorde_data import CreatedAt, Content, Domain, Url, Title
-from models import Classification, TopKeywords
-
-# Summary, Picture, Author, ExternalId, ExternalParentId,
-from models import Translation, Processed, Language, Translated, Keywords
+from exorde_data import Item
+from process import process, TooBigError
+from exorde_data.get_live_configuration import get_live_configuration, LiveConfiguration
 
 
-from process_batch import process_batch
+from lab_initialization import lab_initialization
+# from split_item import split_item # UNUSED TODO
+
 
 def setup_tracing():
     resource = Resource(attributes={
-        ResourceAttributes.SERVICE_NAME: "batch_processor"
+        ResourceAttributes.SERVICE_NAME: "item_processor"
     })
 
     trace_provider = TracerProvider(resource=resource)
@@ -49,36 +48,35 @@ def setup_tracing():
     
 app = web.Application()
 
-from aioprometheus.collectors import Counter, Histogram, Gauge
 
+queue_length_gauge = Gauge(
+    "process_queue_length", 
+    "Current number of items in the processing queue"
+)
 receive_counter = Counter(
-    "batch_processor_reception", 
+    "processor_reception", 
     "Number of 'receive' calls by item processor"
 )
 internal_loop_count = Counter(
-    "batch_processor_cycle",
+    "processor_cycle",
     "Amount of cycle the processor thread has ran"
 )
 too_big_counter = Counter(
-    "batch_processor_too_big", 
+    "processor_too_big", 
     "Number of items that are marked as too big by processor"
 )
 process_histogram = Histogram(
-    "batch_process_execution_duration_seconds", 
+    "process_execution_duration_seconds", 
     "Duration of 'process' in seconds", 
     buckets=[0, 1, 2, 3, 4, 5, 10, 15, 20]
 )
 successful_process = Counter(
-    "batch_process_successful", 
+    "process_successful", 
     "Amount of successfully processed items"
 )
 process_error = Counter(
-    "batch_process_error", 
+    "process_error", 
     "Amount of errored process"
-)
-batch_size_gauge = Gauge(
-    "batch_size", 
-    "Current batch size"
 )
 
 def terminate(signal, frame):
@@ -90,15 +88,6 @@ async def healthcheck(__request__):
 async def metrics(request):
     content, http_headers = render(REGISTRY, [request.headers.get("accept")])
     return web.Response(body=content, headers=http_headers)
-
-from exorde_data import Item
-from process import process, TooBigError
-
-from get_static_configuration import get_static_configuration, StaticConfiguration
-from get_live_configuration import get_live_configuration, LiveConfiguration
-
-from split_item import split_item
-from concurrent.futures import ThreadPoolExecutor
 
 class Busy(Exception):
     """Thread Queue is busy handeling another item"""
@@ -112,52 +101,58 @@ from exorde_data import CreatedAt, Content, Domain, Url, Title
 
 # Summary, Picture, Author, ExternalId, ExternalParentId,
 
-async def processing_logic(app, batch):
+async def processing_logic(app, current_item):
     tracer = trace.get_tracer(__name__)
-    with tracer.start_as_current_span("process_batch") as processing_span:
+    with tracer.start_as_current_span("process_item") as processing_span:
         try:
-            timeout = 60
             logging.info("PROCESS START")
-            processed_batch = process_batch(batch, app["static_configuration"])
-            logging.info(f"PROCESS OK - ADDING TO BATCH : {processed_batch}")
+            processed_item = process(
+                current_item, app["lab_configuration"], 
+                app["live_configuration"]["max_depth"]
+            )
+            logging.info(f"PROCESS OK - ADDING TO BATCH : {processed_item}")
             processing_span.set_status(StatusCode.OK)
-            
-            # New span for sending the processed batch
-            with tracer.start_as_current_span("send_processed_batch") as send_span:
-                target = os.getenv('transactioneer')
+
+            # New span for sending the processed item
+            with tracer.start_as_current_span("send_processed_item") as send_span:
+                target = random.choice(os.getenv('batch_target', '').split(','))
                 if target:
                     async with ClientSession() as session:
-                        async with session.post(f"{target}/commit", json=processed_batch['items']) as response:
+                        async with session.post(
+                            target, json=processed_item
+                        ) as response:
                             if response.status == 200:
                                 successful_process.inc({})
-                                logging.info("PROCESSED BATCH SENT SUCCESSFULLY")
+                                logging.info("PROCESSED ITEM SENT SUCCESSFULLY")
                                 send_span.set_status(StatusCode.OK)
                             else:
-                                logging.error(f"Failed to send processed item, status code: {response.status}")
-                                send_span.set_status(StatusCode.ERROR, "Failed to send processed item")
+                                logging.error(
+                                    f"Failed to send processed item, status code: {response.status}"
+                                )
+                                send_span.set_status(
+                                    StatusCode.ERROR, "Failed to send processed item"
+                                )
                 else:
                     logging.info("No batch_target configured")
-                    send_span.set_status(Status(StatusCode.ERROR, "No target configured"))
-
+                    send_span.set_status(
+                        Status(StatusCode.ERROR, "No target configured")
+                    )
         except asyncio.TimeoutError:
-            logging.error("Batch Processing timed out")
-            processing_span.set_status(Status(StatusCode.ERROR, "Processing timed out"))
+            logging.error("Processing timed out")
+            processing_span.set_status(
+                Status(StatusCode.ERROR, "Processing timed out")
+            )
         except TooBigError as e:
             too_big_counter.inc({})
-            processing_span.set_status(Status(StatusCode.ERROR, str(e)))
+            processing_span.set_status(
+                Status(StatusCode.ERROR, str(e))
+            )
         except Exception as e:
-            logging.exception(f"Unexpected error: {e}")
-            processing_span.set_status(Status(StatusCode.ERROR, "Unexpected error during processing"))
+            logging.error(f"Unexpected error: {e}")
+            processing_span.set_status(
+                Status(StatusCode.ERROR, "Unexpected error during processing")
+            )
             processing_span.record_exception(e)
-
-max_batch_size = os.getenv("batch_size", 20)
-def batch_reached_mature_size(batch) -> bool:
-    global max_batch_size
-    logging.info(f"BATCH SIZE IS {len(batch)} / {max_batch_size} ")
-    batch_size_gauge.set({}, len(batch))
-    if len(batch) >= int(max_batch_size):
-        return True
-    return False
 
 def thread_function(app):
     """
@@ -167,10 +162,8 @@ def thread_function(app):
     executor = ThreadPoolExecutor()
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    
 
     async def process_internal():
-        batch = []
         logging.info("Running internal")
         tracer = trace.get_tracer(__name__)
         while True:
@@ -178,21 +171,20 @@ def thread_function(app):
             try:
                 internal_loop_count.inc({})
                 try:
-                    current_item = await asyncio.wait_for(app['process_queue'].get(), timeout=1.0)
+                    current_item = await asyncio.wait_for(
+                        app['process_queue'].get(), timeout=1.0
+                    )
                 except asyncio.TimeoutError:
                     current_item = None
-                if current_item != None:
-                    batch.append(current_item)
-                    if batch_reached_mature_size(batch):
-                        batch_copy = [(i + 1, item) for i, item in enumerate(batch.copy())]
-                        logging.info("MAKING A COPY")
-                        logging.info(batch_copy)
-                        batch = []
-                        logging.info("processing new batch")
-                        await processing_logic(app, batch_copy)
+                if current_item is not None:
+                    logging.info("processing new item")
+                    await asyncio.wait_for(
+                        processing_logic(app, current_item), timeout=1
+                    )
             except:
                 logging.exception("An error occured in processor thread")
-        await asyncio.sleep(1)
+
+            await asyncio.sleep(1)
 
     loop.run_until_complete(process_internal())
 
@@ -214,7 +206,6 @@ def start_processing_thread(app):
     monitor.start()
     return stop_event, monitor
 
-
 async def setup_thread(app):
     app['process_queue'] = asyncio.Queue()
     stop_event, monitor_thread = start_processing_thread(app)
@@ -226,7 +217,6 @@ async def cleanup(app):
     app['stop_event'].set()  # Signal the thread to stop
     app['monitor_thread'].join()  # Wait for the monitor thread to finish
 
-
 async def receive_item(request):
     global receive_counter
     logging.info("receiving new item")
@@ -236,27 +226,17 @@ async def receive_item(request):
 
         raw_item = await request.json()
         try:
-            processed_item: Processed = Processed(
-                classification=Classification(
-                    label=raw_item["classification"]['label'], 
-                    score=raw_item['classification']['score']
-                ),
-                translation=Translation(
-                    language=Language(raw_item['translation']['language']), 
-                    translation=Translated(raw_item['translation']['translation'])
-                ),
-                top_keywords=Keywords(list(raw_item['top_keywords'])),
-                item=Item(
-                    created_at=CreatedAt(raw_item['item']['created_at']),
-                    title=Title(raw_item['item'].get('title', '')),
-                    content=Content(raw_item['item']['content']),
-                    domain=Domain(raw_item['item']['domain']),
-                    url=Url(raw_item['item']['url'])
-                )
+            item: Item = Item(
+                created_at=CreatedAt(raw_item['created_at']),
+                title=Title(raw_item.get('title', '')),
+                content=Content(raw_item['content']),
+                domain=Domain(raw_item['domain']),
+                url=Url(raw_item['url'])
             )
-            await app['process_queue'].put(processed_item)
+            await app['process_queue'].put(item)
+            queue_length_gauge.set({}, app['process_queue'].qsize())
             receive_counter.inc({})
-            logging.info(processed_item)
+            logging.info(item)
             span.set_status(StatusCode.OK)
             logging.info("Item added to queue")
         except Exception as e:
@@ -279,11 +259,9 @@ app.router.add_get('/metrics', metrics)
 async def configuration_init(app):
     # arguments, live_configuration
     live_configuration: LiveConfiguration = await get_live_configuration()
-    static_configuration: StaticConfiguration = await get_static_configuration(
-        live_configuration
-    )
-    app['static_configuration'] = static_configuration
+    lab_configuration = lab_initialization()
     app['live_configuration'] = live_configuration
+    app['lab_configuration'] = lab_configuration
 
 
 def start_spotter():
@@ -292,8 +270,8 @@ def start_spotter():
         level=logging.DEBUG, 
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
-    port = int(os.environ.get("PORT", "7999"))
-    logging.info(f"Hello World ! I'm BATCH_PROCESSOR and running on {port}")
+    port = int(os.environ.get("PORT", "7998"))
+    logging.info(f"Hello World! I'm running on {port}")
     signal.signal(signal.SIGINT, terminate)
     signal.signal(signal.SIGTERM, terminate)
 

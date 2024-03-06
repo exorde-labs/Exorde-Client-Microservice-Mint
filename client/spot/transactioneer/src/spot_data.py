@@ -56,7 +56,7 @@ async def spot_data(
 
         except ValueError as ve:
             if "balance is too low" in ve.args[0].get("message", ""):
-                logging.info("Balance is to low - FAUCETING")
+                logging.info("Balance is too low - FAUCETING")
                 # Account balance is too low
                 for i in range(0, 3):
                     try:

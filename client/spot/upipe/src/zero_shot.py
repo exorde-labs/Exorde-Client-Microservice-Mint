@@ -47,7 +47,9 @@ def zero_shot(
 
         init_span.set_status(StatusCode.OK)
 
-    with tracer.start_as_current_span("first_classification") as first_classification_span:
+    with tracer.start_as_current_span(
+        "first_classification"
+    ) as first_classification_span:
         # Perform first level of classification
         output = classifier(texts, keys, multi_label=False, max_length=32)
         first_classification_span.set_status(StatusCode.OK)
@@ -68,12 +70,14 @@ def zero_shot(
         ]
         labels_list.append(labels)
 
-    with tracer.start_as_current_span("second_classification") as second_classification_span:
+    with tracer.start_as_current_span(
+        "second_classification"
+    ) as second_classification_span:
         # If max_depth not specified or larger than 1, perform second level of classification
         keys = list(labeldict[labels_list[0][0]].keys())
         output = classifier(texts, keys, multi_label=False, max_length=32)
         output = Classification(
             label=output[0]["labels"][0], score=output[0]["scores"][0]
         )
-        second_classification.set_status(StatusCode.OK)
+        second_classification_span.set_status(StatusCode.OK)
     return output

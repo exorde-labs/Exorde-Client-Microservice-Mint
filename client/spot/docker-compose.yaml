@@ -8,7 +8,7 @@ services:
     ports:
       - "7991:7991"
     build:
-      dockerfile: ./spot/transactioneer.Dockerfile
+      context: ./transactioneer
     environment:
       - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531
     init: true
@@ -21,19 +21,18 @@ services:
       retries: 10
       start_period: 180s
 
-  batch_processor:
+  bpipe:
     restart: always
     ports:
       - "7999:7999"
     build:
-      dockerfile: ./spot/Dockerfile
+      context: ./bpipe
     environment:
       - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531 # todo: remove
       - transactioneer=http://transactioneer:7991
       - batch_size=20
     init: true
     working_dir: /app/
-    command: python3.10 /app/batch_processor.py
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:7999/ || exit 1"]
       interval: 5s
@@ -46,23 +45,22 @@ services:
           memory: 6G
         reservations:
           memory: 6G
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+            #devices:
+            #- driver: nvidia
+            #  count: 1
+            #  capabilities: [gpu]
 
-  processor:
+  upipe_a:
     restart: always
     ports:
       - "7998:7998"
     build:
-      dockerfile: ./spot/Dockerfile
+      context: ./upipe
     environment:
       - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531 # todo remove
-      - batch_target=http://batch_processor:7999
+      - batch_target=http://bpipe:7999
     init: true
     working_dir: /app/
-    command: python3.10 /app/item_processor.py
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:7998/ || exit 1"]
       interval: 5s
@@ -70,18 +68,17 @@ services:
       retries: 10
       start_period: 180s
 
-  processorb:
+  upipe_b:
     restart: always
     ports:
       - "7988:7998"
     build:
-      dockerfile: ./spot/Dockerfile
+      context: ./upipe
     environment:
       - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531 # todo remove
-      - batch_target=http://batch_processor:7999
+      - batch_target=http://bpipe:7999
     init: true
     working_dir: /app/
-    command: python3.10 /app/item_processor.py
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:7998/ || exit 1"]
       interval: 5s

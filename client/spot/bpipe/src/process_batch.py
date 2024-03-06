@@ -2,7 +2,7 @@ import logging
 from importlib import metadata
 from datetime import datetime
 import numpy as np
-from models import (
+from exorde_data import (
     ProtocolItem,
     ProtocolAnalysis,
     ProcessedItem,

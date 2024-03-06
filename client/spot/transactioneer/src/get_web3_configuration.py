@@ -22,11 +22,10 @@ class StaticConfiguration(dict):
     contracts: dict
     read_web3: AsyncWeb3
     write_web3: AsyncWeb3
-    lab_configuration: dict
     gas_cache: dict
 
 
-async def do_get_static_configuration(live_configuration, no_lab: bool=False) -> StaticConfiguration:
+async def do_get_web3_configuration(live_configuration) -> StaticConfiguration:
     main_address: str = os.getenv('main_address', '')
     protocol_configuration: dict = get_protocol_configuration()
     network_configuration: dict = await get_network_configuration()
@@ -47,11 +46,6 @@ async def do_get_static_configuration(live_configuration, no_lab: bool=False) ->
     write_web3 = _write_web3(
         protocol_configuration, network_configuration, live_configuration
     )
-    if not no_lab:
-        from lab_initialization import lab_initialization
-        lab_configuration = lab_initialization()
-    else:
-        lab_configuration = {}
     return StaticConfiguration(
         main_address=main_address,
         worker_account=worker_account,
@@ -61,15 +55,14 @@ async def do_get_static_configuration(live_configuration, no_lab: bool=False) ->
         contracts_and_abi=contracts_and_abi,
         read_web3=read_web3,
         write_web3=write_web3,
-        lab_configuration=lab_configuration,
         gas_cache=gas_cache,
     )
 
 
-async def get_static_configuration(live_configuration, no_lab=False) -> StaticConfiguration:
+async def get_web3_configuration(live_configuration) -> StaticConfiguration:
     try:
         static_configuration: StaticConfiguration = (
-            await do_get_static_configuration(live_configuration, no_lab=no_lab)
+            await do_get_web3_configuration(live_configuration)
         )
         return static_configuration
     except:

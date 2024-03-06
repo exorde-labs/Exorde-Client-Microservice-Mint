@@ -1,42 +1,21 @@
 FROM python:3.10.11 as base
 
-
 # Update and install dependencies
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-
 RUN pip3.10 install --no-cache-dir \
-        'git+https://github.com/exorde-labs/exorde_data.git' \
+        'git+https://github.com/exorde-labs/exorde_data.git@full' \
         aioprometheus==23.3.0 \
         madtypes \
         eth-account \
         asyncio \
         aiohttp \
         lxml \
-        HTMLParser \
-        pytz \
         pyyaml \
-        web3 \
-        packaging \
-        aiofiles==23.2.1 \
-        nltk==3.6.2 \
-        numpy==1.23.4 \
-        tiktoken==0.4.0 \
-        feedparser==6.0.8 \
-        python_dateutil==2.8.2
-
-# set display port to avoid crash
-ENV DISPLAY=:99
-
-WORKDIR /app
-
-FROM exorde_spotting_b as exorde_spotting
-
-## INSTALL THE APP
-COPY spot/src/* /app
+        web3 
 
 RUN pip3.10 install opentelemetry-api \
         opentelemetry-sdk \
@@ -44,4 +23,9 @@ RUN pip3.10 install opentelemetry-api \
         opentelemetry-instrumentation-aiohttp-client \
         opentelemetry-sdk opentelemetry-exporter-otlp
 
-ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+FROM base as transactioneer
+
+WORKDIR /app
+## INSTALL THE APP
+COPY ./src/* /app
+ENTRYPOINT ["python3.10", "/app/transactioneer.py"]

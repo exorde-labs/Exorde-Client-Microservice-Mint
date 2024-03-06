@@ -46,7 +46,6 @@ RUN python3.10 -m pip install --no-cache-dir --upgrade pip setuptools wheel
 # Install pybind11 and other Python dependencies
 RUN python3.10 -m pip install --no-cache-dir pybind11
 
-RUN pip3.10 install --no-cache-dir --upgrade 'git+https://github.com/JustAnotherArchivist/snscrape.git'
 RUN pip3.10 install --no-cache-dir \
         'git+https://github.com/exorde-labs/exorde_data.git' \
         selenium==4.2.0 \
@@ -84,12 +83,6 @@ RUN pip3.10 install --no-cache-dir \
         vaderSentiment==3.3.2 \
         yake==0.4.8 \
         argostranslate==1.8.0
-
-FROM exorde_spotting_aa as exorde_spotting_a
-
-RUN pip3.10 install skops \
-        wtpsplit==1.2.3 
-
 
 FROM exorde_spotting_a as exorde_spotting_b
 

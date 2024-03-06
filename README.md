@@ -1,9 +1,7 @@
 
-# Exorde Microservice Client
+# Exorde Client (Microservice Mint)
 
 <img src="https://media.exorde.io/brand/landscape-logo-color.svg">
-
-> Note : This is a new, on-going, work version of the client.
 
 # Introduction to the Exorde ecosystem
 The world is a vast, interconnected network of ideas, opinions, and information, constantly buzzing with activity. It can be tough to keep up with all the chatter, especially when language barriers and political biases get in the way. But what if there was a way to tap into this global conversation, in real-time, without any filters or restrictions? Enter Exorde Network, a cutting-edge platform that leverages the power of decentralized networks and AI to bring you the latest news, trends, and viral data events worldwide.

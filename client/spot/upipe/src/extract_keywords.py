@@ -2,11 +2,8 @@ import yake
 import re
 import string
 from keybert import KeyBERT
-try:
-    import nltk
-    nltk.download('punkt')
-except:
-    print("nltk already downloaded or error")
+
+
 from models import Keywords, Translation
 
 
