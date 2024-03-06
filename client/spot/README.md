@@ -18,18 +18,17 @@ MAIN_ADDRESS=... docker compose up -d
 ```
 ### GPU Support
 
-The bpipe can have GPU support enabled using
+The `bpipe` stands for `batch_data_pipe` and GPU support is recommended on it.
 
 ```
 ... docker compose -f docker-compose.yaml -f enable-gpu.yaml up -d
 ```
 
-The `bpipe` stands for `batch_data_pipe` and GPU support is recommended on it.
 
 
 ### Horizontal Scaling
 
-GPU support is not recommended on `upipe` as the loading time exceeds the benefits. 
+`upipe` stands for "unit_data_pipe" and GPU support is not recommended as the loading time exceeds the benefits. 
 For this component horizontal scaling is prefered using `UPIPE_SIZE`
 
 ```
