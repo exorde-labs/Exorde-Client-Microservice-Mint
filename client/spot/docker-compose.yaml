@@ -16,7 +16,7 @@ services:
       retries: 10
       start_period: 180s
     deploy:
-      replicas: 2
+      replicas: ${UPIPE_SIZE}
 
   bpipe:
     restart: always
@@ -39,10 +39,6 @@ services:
           memory: 6G
         reservations:
           memory: 6G
-            #devices:
-            #- driver: nvidia
-            #  count: 1
-            #  capabilities: [gpu]
 
   transactioneer:
     volumes:
