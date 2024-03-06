@@ -24,7 +24,8 @@ MAIN_ADDRESS=... docker compose up -d
 ... docker compose -f docker-compose.yaml -f enable-gpu.yaml up -d
 ```
 
-
+> note : we do not provide horizontal scaling options for bpipe as it is dificult to configure both GPU
+> and horizontal scaling, this is on a TODO list; you can define your own compose file if you want to do that
 
 ### 🧑‍🤝‍🧑 Horizontal Scaling
 
