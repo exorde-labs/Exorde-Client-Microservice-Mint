@@ -18,7 +18,7 @@ MAIN_ADDRESS=... docker compose up -d
 ```
 ### GPU Support
 
-The `bpipe` stands for `batch_data_pipe` and GPU support is recommended on it.
+`bpipe` stands for `batch_data_pipe` and GPU support is recommended for it.
 
 ```
 ... docker compose -f docker-compose.yaml -f enable-gpu.yaml up -d
