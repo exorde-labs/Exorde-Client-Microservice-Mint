@@ -1,5 +1,8 @@
 # Exorde Spotting
 
+
+## Components overview
+
 | container | image | has models | Image size | description | GPU Support |
 | --- | --- | --- | --- | --- | --- |
 | transactioneer | transactioneer | no | 1.25 G | Web3 interaction | not required |
@@ -9,13 +12,14 @@
 
 
 
-# How to run
+## How to run
 
 - `MAIN_ADDRESS` is specified as an ENV variable
 
 ```bash
 MAIN_ADDRESS=... docker compose up -d
 ```
+## Monitoring
 
-# About it
+## About it
 > scrap -> upipe -> bpipe -> transactioneer
