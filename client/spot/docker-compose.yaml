@@ -53,7 +53,7 @@ services:
     build:
       context: ./transactioneer
     environment:
-      - main_address=0x2DBc451a2BAd2aDFfEF5d69C393A423D02D4f531
+      - main_address=${MAIN_ADDRESS}
     init: true
     working_dir: /app/
     command: python3.10 /app/transactioneer.py
