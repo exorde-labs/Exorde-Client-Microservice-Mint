@@ -33,9 +33,7 @@ GPU support is not recommended on `upipe` as the loading time exceeds the benefi
 For this component horizontal scaling is prefered using `UPIPE_SIZE`
 
 ```
-
 ... UPIPE_SIZE=2 docker-compose up
-
 ```
 
 ## Example
