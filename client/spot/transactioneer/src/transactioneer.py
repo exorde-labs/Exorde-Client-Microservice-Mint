@@ -237,7 +237,7 @@ def start_transactioneer():
         level=logging.DEBUG, 
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
-    port = int(os.environ.get("PORT", "7991"))
+    port = int(os.environ.get("PORT", "8000"))
     main_address = os.environ["main_address"]
     logging.info(
         f"Hello World! I'm TRANSACTIONEER running on {port} with {main_address}"

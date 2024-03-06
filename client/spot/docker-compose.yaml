@@ -6,11 +6,11 @@ services:
     build:
       context: ./upipe
     environment:
-      - batch_target=http://bpipe:7999
+      - batch_target=http://bpipe:8000
     init: true
     working_dir: /app/
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:7998/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
       interval: 5s
       timeout: 1s
       retries: 10
@@ -23,12 +23,12 @@ services:
     build:
       context: ./bpipe
     environment:
-      - transactioneer=http://transactioneer:7991
+      - transactioneer=http://transactioneer:8000
       - batch_size=20
     init: true
     working_dir: /app/
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:7999/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
       interval: 5s
       timeout: 1s
       retries: 10
@@ -45,7 +45,7 @@ services:
       - ./config:/root/.config
     restart: always
     ports:
-      - "7991:7991"
+      - "7991:8000"
     build:
       context: ./transactioneer
     environment:
@@ -54,7 +54,7 @@ services:
     working_dir: /app/
     command: python3.10 /app/transactioneer.py
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:7991/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
       interval: 5s
       timeout: 1s
       retries: 10

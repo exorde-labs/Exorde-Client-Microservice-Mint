@@ -48,7 +48,6 @@ services:
       - PORT=8000
       - scraper_module=rss007d0675444aa13fc
       - spotting_target=http://processor:7998,http://processorb:7998
-
     deploy:
       resources:
         limits:

@@ -270,7 +270,7 @@ def start_spotter():
         level=logging.DEBUG, 
         format='%(asctime)s - %(levelname)s - %(message)s'
     )
-    port = int(os.environ.get("PORT", "7998"))
+    port = int(os.environ.get("PORT", "8000"))
     logging.info(f"Hello World! I'm running on {port}")
     signal.signal(signal.SIGINT, terminate)
     signal.signal(signal.SIGTERM, terminate)
