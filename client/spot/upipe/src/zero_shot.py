@@ -1,5 +1,4 @@
-from exorde_data import Item
-from models import Classification, Translation
+from exorde_data import Classification, Translation
 
 
 class TooBigError(Exception):

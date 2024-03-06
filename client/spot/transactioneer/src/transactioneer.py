@@ -23,7 +23,7 @@ from aioprometheus.collectors import Counter, Gauge
 
 from exorde_data.get_live_configuration import get_live_configuration, LiveConfiguration
 from commit_analyzed_batch import commit_analyzed_batch
-from get_web3_configuration import get_web3_configuration, StaticConfiguration
+from get_web3_configuration import get_web3_configuration, Web3Configuration
 from claim_master import claim_master
 from faucet import faucet
 
@@ -120,7 +120,7 @@ async def monitor_tasks(app):
 async def configuration_init(app):
     # arguments, live_configuration
     live_configuration: LiveConfiguration = await get_live_configuration()
-    web3_configuration: StaticConfiguration = await get_web3_configuration(
+    web3_configuration: Web3Configuration = await get_web3_configuration(
         live_configuration
     )
     app['web3_configuration'] = web3_configuration

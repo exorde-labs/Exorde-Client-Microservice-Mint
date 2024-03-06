@@ -3,8 +3,7 @@ import re
 import string
 from keybert import KeyBERT
 
-
-from models import Keywords, Translation
+from exorde_data import Keywords, Translation
 
 
 def is_good_1gram(word):

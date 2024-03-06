@@ -6,9 +6,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3.10 install --no-cache-dir \
-        'git+https://github.com/exorde-labs/exorde_data.git@full' \
-        aioprometheus==23.3.0 \
+RUN pip3.10 install --no-cache-dir aioprometheus==23.3.0 \
         madtypes \
         eth-account \
         asyncio \
@@ -26,6 +24,10 @@ RUN pip3.10 install opentelemetry-api \
 FROM base as transactioneer
 
 WORKDIR /app
+
+RUN pip3.10 install --no-cache-dir \
+        'git+https://github.com/exorde-labs/exorde_data.git@full'
+
 ## INSTALL THE APP
 COPY ./src/* /app
 ENTRYPOINT ["python3.10", "/app/transactioneer.py"]

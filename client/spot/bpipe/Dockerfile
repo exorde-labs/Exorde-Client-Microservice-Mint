@@ -45,7 +45,9 @@ RUN python3.10 -m pip install --no-cache-dir --upgrade pip setuptools wheel
 # set display port to avoid crash
 ENV DISPLAY=:99
 
-from with_python as with_deps
+RUN rm -rf /tmp
+
+FROM with_python as with_deps
 
 RUN pip3.10 install opentelemetry-api \
         opentelemetry-sdk \
@@ -73,6 +75,10 @@ RUN pip3.10 install --no-cache-dir \
         finvader==1.0.2 \
         vaderSentiment==3.3.2 \
         swifter==1.3.4
+
+# Clean cache now that we have installed everything
+RUN rm -rf /root/.cache/* \
+    && rm -rf /root/.local/cache/*
 
 FROM with_deps as with_models
 

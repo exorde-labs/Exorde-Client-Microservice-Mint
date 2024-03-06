@@ -3,7 +3,7 @@ from preprocess import preprocess
 from translate import translate
 from extract_keywords import extract_keywords
 from zero_shot import zero_shot
-from models import (
+from exorde_data import (
     Classification,
     Translation,
     Keywords,

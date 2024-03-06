@@ -1,11 +1,12 @@
 import logging, asyncio
 
+from get_web3_configuration import Web3Configuration
 
 async def get_transaction_receipt(
-    transaction_hash, previous_nonce, static_configuration
+    transaction_hash, previous_nonce, web3_configuration: Web3Configuration
 ):
-    # worker_account = static_configuration["worker_account"]
-    read_web3 = static_configuration["read_web3"]
+    # worker_account = web3_configuration["worker_account"]
+    read_web3 = web3_configuration["read_web3"]
     await asyncio.sleep(2)
     logging.info("Waiting for transaction confirmation")
     # for i in range(5):

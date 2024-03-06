@@ -13,7 +13,7 @@ from web3 import AsyncWeb3
 
 
 
-class StaticConfiguration(dict):
+class Web3Configuration(dict):
     main_address: str
     worker_account: LocalAccount
     protocol_configuration: dict
@@ -25,7 +25,7 @@ class StaticConfiguration(dict):
     gas_cache: dict
 
 
-async def do_get_web3_configuration(live_configuration) -> StaticConfiguration:
+async def do_get_web3_configuration(live_configuration) -> Web3Configuration:
     main_address: str = os.getenv('main_address', '')
     protocol_configuration: dict = get_protocol_configuration()
     network_configuration: dict = await get_network_configuration()
@@ -46,7 +46,7 @@ async def do_get_web3_configuration(live_configuration) -> StaticConfiguration:
     write_web3 = _write_web3(
         protocol_configuration, network_configuration, live_configuration
     )
-    return StaticConfiguration(
+    return Web3Configuration(
         main_address=main_address,
         worker_account=worker_account,
         protocol_configuration=protocol_configuration,
@@ -59,12 +59,12 @@ async def do_get_web3_configuration(live_configuration) -> StaticConfiguration:
     )
 
 
-async def get_web3_configuration(live_configuration) -> StaticConfiguration:
+async def get_web3_configuration(live_configuration) -> Web3Configuration:
     try:
-        static_configuration: StaticConfiguration = (
+        web3_configuration: Web3Configuration = (
             await do_get_web3_configuration(live_configuration)
         )
-        return static_configuration
+        return web3_configuration
     except:
         logging.exception(
             "An error occured retrieving static configuration, exiting"

@@ -45,6 +45,8 @@ RUN python3.10 -m pip install --no-cache-dir --upgrade pip setuptools wheel
 # set display port to avoid crash
 ENV DISPLAY=:99
 
+RUN rm -rf /tmp
+
 from with_python as with_deps
 
 RUN pip3.10 install opentelemetry-api \
@@ -73,6 +75,9 @@ RUN pip3.10 install --no-cache-dir \
         keybert==0.7.0 \
         spacy==3.5.1
 
+# Clean cache now that we have installed everything
+RUN rm -rf /root/.cache/* \
+    && rm -rf /root/.local/cache/*
 
 FROM with_deps as with_models
 
@@ -84,8 +89,6 @@ COPY ./install.py /app/install.py
 RUN python3.10 /app/install.py
 
 FROM with_models as with_code
-
-
 
 RUN pip3.10 install --no-cache-dir \
         'git+https://github.com/exorde-labs/exorde_data.git@full'

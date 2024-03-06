@@ -10,10 +10,10 @@ import logging, os, asyncio
 from web3 import Web3
 
 from select_random_faucet import select_random_faucet
-from get_static_configuration import StaticConfiguration
+from get_web3_configuration import Web3Configuration
 
 
-async def faucet(static_configuration: StaticConfiguration):
+async def faucet(static_configuration: Web3Configuration):
     write_web3 = static_configuration["write_web3"]
     read_web3 = static_configuration["read_web3"]
     worker_account = static_configuration["worker_account"]
