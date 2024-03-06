@@ -28,7 +28,7 @@ MAIN_ADDRESS=... docker compose up -d
 
 ### Horizontal Scaling
 
-- `upipe` stands for "unit_data_pipe" and GPU support is not recommended as the loading time exceeds the benefits. 
+- `upipe` stands for `unit_data_pipe` and GPU support is not recommended as the loading time exceeds the benefits. 
 For this component horizontal scaling is prefered using `UPIPE_SIZE`
 
 ```
