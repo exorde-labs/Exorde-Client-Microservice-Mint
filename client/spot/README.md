@@ -30,7 +30,7 @@ To further customize the compose file, docker compose uses an extend system.
 ```
 
 > note : we do not provide horizontal scaling options for bpipe as it is dificult to configure both GPU
-> and horizontal scaling
+> and horizontal scaling ([more about this](https://github.com/exorde-labs/Exorde-Client-Microservice-Mint/issues/1))
 
 ### 🧑‍🤝‍🧑 Horizontal Scaling (upipe-hoz.yaml)
 
