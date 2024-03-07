@@ -45,7 +45,7 @@ For this component horizontal scaling is prefered using `UPIPE_SIZE`
 
 - Spawning the client with 5 upipe and GPU support :
 ```
-MAIN_ADDRESS=... UPIPE_SIZE=5 docker-compose -f docker-compose.yaml -f enable-gpu.yaml -f upipe-hoz.yaml up -d
+MAIN_ADDRESS=... UPIPE_SIZE=5 docker-compose -f docker-compose.yaml -f ./bpipe/gpu.yaml -f ./upipe/hoz.yaml up -d
 ```
 
 ### 👁️ Monitoring
