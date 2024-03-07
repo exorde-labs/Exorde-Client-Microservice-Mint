@@ -1,0 +1,3 @@
+[submodule "client/spot/upipe"]
+	path = client/spot/upipe
+	url = git@github.com:exorde-labs/upipe.git
