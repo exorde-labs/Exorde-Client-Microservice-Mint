@@ -2,6 +2,8 @@ version: '3.9'
 
 services:
   upipe:
+    networks:
+      - exorde-network
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=upipe"
@@ -20,6 +22,8 @@ services:
       start_period: 180s
 
   bpipe:
+    networks:
+      - exorde-network
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=bpipe"
@@ -45,6 +49,8 @@ services:
           memory: 6G
 
   transactioneer:
+    networks:
+      - exorde-network
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=transactioneer"
@@ -68,6 +74,8 @@ services:
       start_period: 180s
 
   container_scout:
+    networks:
+      - exorde-network
     restart: always
     environment:
       - FILTER=network.exorde.monitor:true
@@ -78,3 +86,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8777:8080"
+
+networks:
+  exorde-network:
+    name: exorde-network
+    driver: bridge

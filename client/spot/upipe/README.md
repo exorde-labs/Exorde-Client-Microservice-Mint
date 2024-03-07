@@ -1,2 +1,2 @@
 # Unit Pipe
-> Process items individually
+> Unit Processing logic for exorde-client
