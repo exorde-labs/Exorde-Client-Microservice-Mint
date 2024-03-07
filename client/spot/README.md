@@ -8,7 +8,7 @@
 | [exorde-labs/bpipe](https://github.com/exorde-labs/bpipe/tree/main) | yes | 14.6 G | Batch processing | yes (recomended) | [![Build & Publish the container image - production](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml) |
 | [exorde-labs/upipe](https://github.com/exorde-labs/upipe/tree/main) | yes | 19.7 G | Unit processing | yes (not recomended) | [![Build](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml) |
 | [exorde-labs/scraper](https://github.com/exorde-labs/scraper/tree/main) | no | 2.24 G | Scraping | not required |  |
-| [exorde-labs/container_scout](https://github.com/exorde-labs/container_scout/tree/main) | no | 147M | Orchestration & Monitoring | not required |  |
+| [exorde-labs/container_scout](https://github.com/exorde-labs/container_scout/tree/main) | no | 147M | Orchestration & Monitoring | not required | [![Build](https://github.com/exorde-labs/container_scout/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/container_scout/actions/workflows/build_docker_production.yaml) |
 
 ### 📘 How to run
 
