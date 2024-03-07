@@ -7,3 +7,6 @@
 [submodule "client/spot/scrap"]
 	path = client/spot/scrap
 	url = git@github.com:exorde-labs/scrap.git
+[submodule "client/spot/container_scout"]
+	path = client/spot/container_scout
+	url = git@github.com:exorde-labs/container_scout.git
