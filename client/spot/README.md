@@ -4,10 +4,11 @@
 
 | image | has models | Image size | description | GPU Support | build |
 | --- | --- | --- | --- | --- | --- |
-| exorde-labs/transactioneer | no | 1.25 G | Web3 interaction | not required | [![Build & Publish the container image - production](https://github.com/exorde-labs/transactioneer/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/transactioneer/actions/workflows/build_docker_production.yaml) |
-| exorde-labs/bpipe | yes | 14.6 G | Batch processing | yes (recomended) | [![Build & Publish the container image - production](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml) |
-| exorde-labs/upipe | yes | 19.7 G | Unit processing | yes (not recomended) | [![Build](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml) |
-| exorde-labs/scraper | no | 2.24 G | Scraping | not required |  |
+| [exorde-labs/transactioneer](https://github.com/exorde-labs/transactioneer/tree/main) | no | 1.25 G | Web3 interaction | not required | [![Build & Publish the container image - production](https://github.com/exorde-labs/transactioneer/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/transactioneer/actions/workflows/build_docker_production.yaml) |
+| [exorde-labs/bpipe](https://github.com/exorde-labs/bpipe/tree/main) | yes | 14.6 G | Batch processing | yes (recomended) | [![Build & Publish the container image - production](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml) |
+| [exorde-labs/upipe](https://github.com/exorde-labs/upipe/tree/main) | yes | 19.7 G | Unit processing | yes (not recomended) | [![Build](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml) |
+| [exorde-labs/scraper](https://github.com/exorde-labs/scraper/tree/main) | no | 2.24 G | Scraping | not required |  |
+| [exorde-labs/container_scout](https://github.com/exorde-labs/container_scout/tree/main) | no | 147M | Orchestration & Monitoring | not required |  |
 
 ### 📘 How to run
 
