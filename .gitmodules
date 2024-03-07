@@ -1,3 +1,6 @@
 [submodule "client/spot/upipe"]
 	path = client/spot/upipe
 	url = git@github.com:exorde-labs/upipe.git
+[submodule "client/spot/transactioneer"]
+	path = client/spot/transactioneer
+	url = git@github.com:exorde-labs/transactioneer.git
