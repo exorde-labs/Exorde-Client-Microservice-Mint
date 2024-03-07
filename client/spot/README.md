@@ -21,7 +21,7 @@ MAIN_ADDRESS=... docker compose up -d
 
 To further customize the compose file, docker compose uses an extend system.
 
-### ⚡ GPU Support (enable-gpu.yaml)
+### ⚡ GPU Support (bpipe/gpu.yaml)
 
 - `bpipe` stands for `batch_data_pipe` and GPU support is recommended for it.
 
@@ -32,7 +32,7 @@ To further customize the compose file, docker compose uses an extend system.
 > note : we do not provide horizontal scaling options for bpipe as it is dificult to configure both GPU
 > and horizontal scaling ([more about this](https://github.com/exorde-labs/Exorde-Client-Microservice-Mint/issues/1))
 
-### 🧑‍🤝‍🧑 Horizontal Scaling (upipe-hoz.yaml)
+### 🧑‍🤝‍🧑 Horizontal Scaling (upipe/hoz.yaml)
 
 - `upipe` stands for `unit_data_pipe` and GPU support is not recommended as the loading time exceeds the benefits. 
 For this component horizontal scaling is prefered using `UPIPE_SIZE`
