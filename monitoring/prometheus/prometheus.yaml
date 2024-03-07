@@ -24,23 +24,7 @@ scrape_configs:
   static_configs:
   - targets:
     - localhost:9090
-- job_name: 'docker-services'
-  static_configs:
-    - targets:
-      - scraper:8000
-      - 172.17.0.1:9100
-      - processor:7998
-      - processorb:7998
-      - batch_processor:7999
-      - batch_processor_b:7999
-      - transactioneer:7991
-      - cadvisor:8080
-      - youtube:8000
-      - weibo:8000
-      - rss:8000
-      - hn:8000
-      - forocoches:8000
-      - followin:8000
-      - reddit:8000
-      - twitter:8000
-      - jvc:8000
+- job_name: 'dynamic_containers'
+  http_sd_configs:
+    - url: 'http://container_scout:8080/targets'
+      refresh_interval: 1m  # Fetch the target list every minute.

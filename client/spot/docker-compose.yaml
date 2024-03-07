@@ -2,6 +2,9 @@ version: '3.9'
 
 services:
   upipe:
+    labels:
+      - "network.exorde.monitor=true"
+      - "network.exorde.service=upipe"
     restart: always
     build:
       context: ./upipe
@@ -15,10 +18,11 @@ services:
       timeout: 1s
       retries: 10
       start_period: 180s
-    deploy:
-      replicas: ${UPIPE_SIZE}
 
   bpipe:
+    labels:
+      - "network.exorde.monitor=true"
+      - "network.exorde.service=bpipe"
     restart: always
     build:
       context: ./bpipe
@@ -41,6 +45,9 @@ services:
           memory: 6G
 
   transactioneer:
+    labels:
+      - "network.exorde.monitor=true"
+      - "network.exorde.service=transactioneer"
     volumes:
       - ./config:/root/.config
     restart: always
@@ -59,3 +66,15 @@ services:
       timeout: 1s
       retries: 10
       start_period: 180s
+
+  container_scout:
+    restart: always
+    environment:
+      - FILTER=network.exorde.monitor:true
+    build:
+      context: ./container_scout
+    init: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8777:8080"
