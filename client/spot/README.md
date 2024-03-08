@@ -2,12 +2,13 @@
 
 ## 🐳 Components overview
 
-| image | has models | Image size | description | GPU Support |
-| --- | --- | --- | --- | --- |
-| transactioneer | no | 1.25 G | Web3 interaction | not required |
-| bpipe | yes | 14.6 G | Batch processing | yes (recomended) |
-| upipe | yes | 19.7 G | Unit processing | yes (not recomended) |
-| *-scraper | no | 2.24 G | Scraping | No not required |
+| image | has models | Image size | description | GPU Support | Build Status | Version |
+| --- | --- | --- | --- | --- | --- | --- |
+| [exorde-labs/transactioneer](https://github.com/exorde-labs/transactioneer/tree/main) | no |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/transactioneer) | Web3 interaction | not required | [![Build](https://github.com/exorde-labs/transactioneer/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/transactioneer/actions/workflows/build_docker_production.yaml) | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/transactioneer)|
+| [exorde-labs/bpipe](https://github.com/exorde-labs/bpipe/tree/main) | yes |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/bpipe) | Batch processing | yes (recomended) | [![Build](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/bpipe/actions/workflows/build_docker_production.yaml) | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/bpipe)|
+| [exorde-labs/upipe](https://github.com/exorde-labs/upipe/tree/main) | yes |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/upipe) | Unit processing | yes (not recomended) | [![Build](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml) |![Docker Image Version](https://img.shields.io/docker/v/exordelabs/upipe)|
+| [exorde-labs/spot](https://github.com/exorde-labs/spot/tree/main) | no |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spot) | Spotter | not required |  |
+| [exorde-labs/container_scout](https://github.com/exorde-labs/container_scout/tree/main) | no | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/container_scout)| Orchestration & Monitoring | not required | [![Build](https://github.com/exorde-labs/container_scout/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/container_scout/actions/workflows/build_docker_production.yaml) |![Docker Image Version](https://img.shields.io/docker/v/exordelabs/container_scout)|
 
 ### 📘 How to run
 
@@ -21,7 +22,7 @@ MAIN_ADDRESS=... docker compose up -d
 
 To further customize the compose file, docker compose uses an extend system.
 
-### ⚡ GPU Support (enable-gpu.yaml)
+### ⚡ GPU Support (bpipe/gpu.yaml)
 
 - `bpipe` stands for `batch_data_pipe` and GPU support is recommended for it.
 
@@ -32,7 +33,7 @@ To further customize the compose file, docker compose uses an extend system.
 > note : we do not provide horizontal scaling options for bpipe as it is dificult to configure both GPU
 > and horizontal scaling ([more about this](https://github.com/exorde-labs/Exorde-Client-Microservice-Mint/issues/1))
 
-### 🧑‍🤝‍🧑 Horizontal Scaling (upipe-hoz.yaml)
+### 🧑‍🤝‍🧑 Horizontal Scaling (upipe/hoz.yaml)
 
 - `upipe` stands for `unit_data_pipe` and GPU support is not recommended as the loading time exceeds the benefits. 
 For this component horizontal scaling is prefered using `UPIPE_SIZE`
