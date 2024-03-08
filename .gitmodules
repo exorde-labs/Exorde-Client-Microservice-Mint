@@ -4,12 +4,12 @@
 [submodule "client/spot/transactioneer"]
 	path = client/spot/transactioneer
 	url = git@github.com:exorde-labs/transactioneer.git
-[submodule "client/spot/scrap"]
-	path = client/spot/scrap
-	url = git@github.com:exorde-labs/scrap.git
 [submodule "client/spot/container_scout"]
 	path = client/spot/container_scout
 	url = git@github.com:exorde-labs/container_scout.git
 [submodule "client/spot/bpipe"]
 	path = client/spot/bpipe
 	url = git@github.com:6r17/bpipe.git
+[submodule "client/spot/spot"]
+	path = client/spot/spot
+	url = git@github.com:exorde-labs/spot.git
