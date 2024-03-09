@@ -1,6 +1,12 @@
 # Exorde Spotting
 
-## 🐳 Components overview
+## 🐳 Spotting Stack Overview
+
+- [all repositories on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
+
+### Minimal required images
+
+#### Data Processing
 
 | image | has models | Image size | description | GPU Support | Build Status | Version |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -9,46 +15,10 @@
 | [upipe](https://github.com/exorde-labs/upipe/tree/main) | yes |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/upipe) | Unit processing | yes (not recomended) | [![Build](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/upipe/actions/workflows/build_docker_production.yaml) |![Docker Image Version](https://img.shields.io/docker/v/exordelabs/upipe)|
 | [container_scout](https://github.com/exorde-labs/container_scout/tree/main) | no | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/container_scout)| Orchestration & Monitoring | not required | [![Build](https://github.com/exorde-labs/container_scout/actions/workflows/build_docker_production.yaml/badge.svg)](https://github.com/exorde-labs/container_scout/actions/workflows/build_docker_production.yaml) |![Docker Image Version](https://img.shields.io/docker/v/exordelabs/container_scout)|
 
-### 📘 How to run
 
-- `MAIN_ADDRESS` is specified as an ENV variable
+#### Data Retrieval
 
-```bash
-MAIN_ADDRESS=... docker compose up -d
-```
+- [Every available `spot` driver](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
 
-### Extended parameters
 
-To further customize the compose file, docker compose uses an extend system.
-
-### ⚡ GPU Support (bpipe/gpu.yaml)
-
-- `bpipe` stands for `batch_data_pipe` and GPU support is recommended for it.
-
-```
-... docker compose -f docker-compose.yaml -f ./bpipe/gpu.yaml up -d
-```
-
-> note : we do not provide horizontal scaling options for bpipe as it is dificult to configure both GPU
-> and horizontal scaling ([more about this](https://github.com/exorde-labs/Exorde-Client-Microservice-Mint/issues/1))
-
-### 🧑‍🤝‍🧑 Horizontal Scaling (upipe/hoz.yaml)
-
-- `upipe` stands for `unit_data_pipe` and GPU support is not recommended as the loading time exceeds the benefits. 
-For this component horizontal scaling is prefered using `UPIPE_SIZE`
-
-```
-... UPIPE_SIZE=2 docker-compose -f docker-compose -f ./upipe/hoz.yaml up
-```
-
-### 📘 Example
-
-- Spawning the client with 5 upipe and GPU support :
-```
-MAIN_ADDRESS=... UPIPE_SIZE=5 docker-compose -f docker-compose.yaml -f ./bpipe/gpu.yaml -f ./upipe/hoz.yaml up -d
-```
-
-### 👁️ Monitoring
-
-### 💬 About it
-> scrap -> upipe -> bpipe -> transactioneer
+#### 👁️ Monitoring
