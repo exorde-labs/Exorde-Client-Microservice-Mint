@@ -9,6 +9,10 @@
 | [spotlemmyw04b6eb792ca4a1](https://github.com/exorde-labs/lemmyw04b6eb792ca4a1/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotlemmyw04b6eb792ca4a1) | Spotter | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotlemmyw04b6eb792ca4a1)
 | [spothackbc9419ab11eebe56](https://github.com/exorde-labs/hackbc9419ab11eebe56/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spothackbc9419ab11eebe56) | Spotter | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spothackbc9419ab11eebe56)
 
+# THIS REPOSITORY IS ONGOING WORK AND HAS NOT BEEN RELEASED YET
+# I DO NOT RECOMEND YOU SPENDING TIME ON THIS BEFORE OFFICIAL RELEASE
+# THANK YOU FOR YOUR IMPATIENCE
+
 - :blue_book: [**How to run**](./MANUAL.md)
 - [Every repository on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
 - [Every available `spot` driver repository](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
