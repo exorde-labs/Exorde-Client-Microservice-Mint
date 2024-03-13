@@ -1,35 +1,41 @@
 
-# Exorde Client (Microservice Mint)
+# THIS REPOSITORY IS ONGOING WORK AND HAS NOT BEEN RELEASED YET
+# I DO NOT RECOMEND YOU SPENDING TIME ON THIS BEFORE OFFICIAL RELEASE
+# THANK YOU FOR YOUR IMPATIENCE
 
-<img src="https://media.exorde.io/brand/landscape-logo-color.svg">
+# Stack Overview
 
-# Introduction to the Exorde ecosystem
-The world is a vast, interconnected network of ideas, opinions, and information, constantly buzzing with activity. It can be tough to keep up with all the chatter, especially when language barriers and political biases get in the way. But what if there was a way to tap into this global conversation, in real-time, without any filters or restrictions? Enter Exorde Network, a cutting-edge platform that leverages the power of decentralized networks and AI to bring you the latest news, trends, and viral data events worldwide.
+## Core
 
-# The Exorde client
+| image | Image size | description | Version | Pulls |
+| --- |  --- | --- | --- | --- |
+| [transactioneer](https://github.com/exorde-labs/transactioneer/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/transactioneer) | Web3 interaction | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/transactioneer)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/transactioneer) |
+| [bpipe](https://github.com/exorde-labs/bpipe/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/bpipe) | Batch processing |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/bpipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/bpipe ) |
+| [upipe](https://github.com/exorde-labs/upipe/tree/main) |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/upipe) | Unit processing | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/upipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/upipe) |
+| [container_scout](https://github.com/exorde-labs/container_scout/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/container_scout)| Orchestration & Monitoring | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/container_scout)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/container_scout) |
 
-The exorde client is a foundational base for decentralized, modulable, robust scraping & Machine-learning-powered real-time streaming analytics.
+## Spotters
 
-The Exorde Network is a decentralized network of workers collecting newly posted information on multiple sources online, translating them live, extracting valuable metadata & submitting their data by batches to the Exorde Protocol. The goal of the Exorde Network is to form an incentivized, automated-rewards & secure platform where Exorde workers (nodes running the exorde-client) can compete to collect the best data, the fastest, and get automatically rewarded. It makes sense to either participate in our open-source bounties program, build additional scrapers, or fork the scrapers and upgrade them yourself, to be competitive. Adapting strategies to match
+| image | Image size | Version | Pulls |
+| --- |  --- | --- | --- |
+| [spotseekingalphad89ba32s](https://github.com/exorde-labs/seekingalphad89ba32s/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotseekingalphad89ba32s) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotseekingalphad89ba32s) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotseekingalphad89ba32s) | 
+| [spotbitcointalk4de40ec26](https://github.com/exorde-labs/bitcointalk4de40ec26/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotbitcointalk4de40ec26) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotbitcointalk4de40ec26) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotbitcointalk4de40ec26) | 
+| [spotjvc8439846094ced03ff](https://github.com/exorde-labs/jvc8439846094ced03ff/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotjvc8439846094ced03ff) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotjvc8439846094ced03ff) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotjvc8439846094ced03ff) | 
+| [spotrss007d0675444aa13fc](https://github.com/exorde-labs/rss007d0675444aa13fc/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotrss007d0675444aa13fc) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotrss007d0675444aa13fc) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotrss007d0675444aa13fc) | 
+| [spotch4875eda56be56000ac](https://github.com/exorde-labs/ch4875eda56be56000ac/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotch4875eda56be56000ac) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotch4875eda56be56000ac) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotch4875eda56be56000ac) | 
+| [spotforocoches86019fc2d4](https://github.com/exorde-labs/forocoches86019fc2d4/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotforocoches86019fc2d4) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotforocoches86019fc2d4) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotforocoches86019fc2d4) | 
+| [spothackbc9419ab11eebe56](https://github.com/exorde-labs/hackbc9419ab11eebe56/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spothackbc9419ab11eebe56) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spothackbc9419ab11eebe56) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spothackbc9419ab11eebe56) | 
+| [spotmasto65ezfd86424f69a](https://github.com/exorde-labs/masto65ezfd86424f69a/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotmasto65ezfd86424f69a) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotmasto65ezfd86424f69a) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotmasto65ezfd86424f69a) | 
+| [spotnostr5fa856e7234fbee](https://github.com/exorde-labs/nostr5fa856e7234fbee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotnostr5fa856e7234fbee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotnostr5fa856e7234fbee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotnostr5fa856e7234fbee) | 
+| [spota7df32de3a60dfdb7a0b](https://github.com/exorde-labs/a7df32de3a60dfdb7a0b/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spota7df32de3a60dfdb7a0b) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spota7df32de3a60dfdb7a0b) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spota7df32de3a60dfdb7a0b) | 
+| [spotap98j3envoubi3fco1kc](https://github.com/exorde-labs/ap98j3envoubi3fco1kc/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotap98j3envoubi3fco1kc) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotap98j3envoubi3fco1kc) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotap98j3envoubi3fco1kc) | 
+| [spotlemmyw04b6eb792ca4a1](https://github.com/exorde-labs/lemmyw04b6eb792ca4a1/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotlemmyw04b6eb792ca4a1) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotlemmyw04b6eb792ca4a1) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotlemmyw04b6eb792ca4a1) | 
+| [spotwei223be19ab11e891bo](https://github.com/exorde-labs/wei223be19ab11e891bo/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotwei223be19ab11e891bo) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotwei223be19ab11e891bo) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotwei223be19ab11e891bo) | 
+| [spotfollowinc645fc950d7f](https://github.com/exorde-labs/followinc645fc950d7f/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotfollowinc645fc950d7f) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotfollowinc645fc950d7f) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotfollowinc645fc950d7f) | 
+| [spotyoutube00e1f862e5eff](https://github.com/exorde-labs/youtube00e1f862e5eff/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotyoutube00e1f862e5eff) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotyoutube00e1f862e5eff) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotyoutube00e1f862e5eff) | 
+| [spottradview251ae30a11ee](https://github.com/exorde-labs/tradview251ae30a11ee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spottradview251ae30a11ee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spottradview251ae30a11ee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spottradview251ae30a11ee) | 
 
-# The Exorde open source data ecosystem
 
-The Exorde philosophy: plug your workers, interact with the protocol, submit valuable (and untampered) data, and get rewarded with EXD tokens. The first workers on the newest and most relevant information earn more!
-
-Check the [Documentation](https://docs.exorde.network/) to know how to build your image, or download an existing one and participate in the Exorde network!
-
-You can look at [CONTRIBUTING.md](CONTRIBUTING.md) to know how to work with the exorde-client internal interface, build & customize scrapers, win open source prizes!
-
-<p align="center">
-  <a href="CONTRIBUTING.md">
-  	<img src="https://img.shields.io/badge/how%20to-CONTRIBUTE-blue?style=for-the-badge" />
-  </a>
- <a href="https://docs.exorde.network/run/run_from_container_image">
- 	<img src="https://img.shields.io/badge/how%20to-mine%20EXD-yellowgreen?style=for-the-badge" /></a>
-  <a href="https://github.com/exorde-labs/TestnetProtocol">
-  	<img src="https://img.shields.io/badge/check%20the-%20EXORDE%20PROTOCOL-red?style=for-the-badge" />
-  </a>
-  <a href="https://exorde.network">
-  	<img src="https://img.shields.io/badge/check%20the-%20Exorde%20Website-gray?style=for-the-badge" />
-  </a>
-</p>
+- :blue_book: [**How to run**](./MANUAL.md)
+- [Every repository on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
+- [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
