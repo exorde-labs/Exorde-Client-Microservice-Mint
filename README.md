@@ -11,6 +11,6 @@
 | [spot](https://github.com/exorde-labs/spot/tree/main) | ~800MB per module | Spotting drivers | - | - |
 
 
-- ## :blue_book: [**How to run**](./MANUAL.md)
+- ## :blue_book: [**How to mine EXD**](./MANUAL.md)
 - [Every repository on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
 - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
