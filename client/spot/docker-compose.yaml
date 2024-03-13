@@ -8,7 +8,7 @@ services:
       - "network.exorde.monitor=true"
       - "network.exorde.service=upipe"
     restart: always
-    image: exorde-labs/upipe:latest
+    image: exordelabs/upipe:latest
     environment:
       - batch_target=http://bpipe:8000
     init: true
@@ -27,7 +27,7 @@ services:
       - "network.exorde.monitor=true"
       - "network.exorde.service=bpipe"
     restart: always
-    image: exorde-labs/bpipe:latest
+    image: exordelabs/bpipe:latest
     environment:
       - transactioneer=http://transactioneer:8000
       - batch_size=20
@@ -57,7 +57,7 @@ services:
     restart: always
     ports:
       - "7991:8000"
-    image: exorde-labs/transactioneer:latest
+    image: exordelabs/transactioneer:latest
     environment:
       - main_address=${MAIN_ADDRESS}
     init: true
@@ -76,7 +76,7 @@ services:
     restart: always
     environment:
       - FILTER=network.exorde.monitor:true
-    image: exorde-labs/container_scout:latest
+    image: exordelabs/container_scout:latest
     init: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

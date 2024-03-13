@@ -79,13 +79,15 @@ services:
     restart: always
     environment:
       - FILTER=network.exorde.monitor:true
+      - ORCHESTRATE=2
+      - REFRESH_TIME=3600
     build:
       context: ./container_scout
     init: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "8777:8080"
+      - "8777:8000"
 
 networks:
   exorde-network:
