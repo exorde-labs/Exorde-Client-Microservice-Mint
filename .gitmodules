@@ -1,6 +1,0 @@
-[submodule "client/spot/upipe"]
-	path = client/spot/upipe
-	url = git@github.com:exorde-labs/upipe.git
-[submodule "client/spot/bpipe"]
-	path = client/spot/bpipe
-	url = git@github.com:6r17/bpipe.git
