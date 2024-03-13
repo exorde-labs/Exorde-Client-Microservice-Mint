@@ -12,7 +12,7 @@
 | [transactioneer](https://github.com/exorde-labs/transactioneer/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/transactioneer) | Web3 interaction | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/transactioneer)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/transactioneer) |
 | [bpipe](https://github.com/exorde-labs/bpipe/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/bpipe) | Batch processing |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/bpipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/bpipe ) |
 | [upipe](https://github.com/exorde-labs/upipe/tree/main) |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/upipe) | Unit processing | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/upipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/upipe) |
-| [container_scout](https://github.com/exorde-labs/container_scout/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/container_scout)| Orchestration & Monitoring | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/container_scout)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/container_scout) |
+| [orchestrator](https://github.com/exorde-labs/orchestrator/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/orchestrator)| Orchestration & Monitoring | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/orchestrator)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/orchestrator) |
 
 ## Spotters
 
