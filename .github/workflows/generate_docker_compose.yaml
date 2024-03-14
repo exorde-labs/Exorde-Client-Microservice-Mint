@@ -1,0 +1,38 @@
+name: Update Docker Compose
+
+on: 
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-compose:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests # Add any other dependencies here
+
+    - name: Configure Git
+      run: |
+        git config user.name 'github-actions'
+        git config user.email 'github-actions@github.com'
+
+    - name: Remove Existing spotters.yaml
+      run: rm -f spotters.yaml
+
+    - name: Generate spotters.yaml
+      run: python generate_docker_compose.py > spotters.yaml
+
+    - name: Commit and Push
+      run: |
+        git add spotters.yaml
+        git commit -m "Update spotters.yaml" || echo "No changes to commit"
+        git push origin HEAD:main
