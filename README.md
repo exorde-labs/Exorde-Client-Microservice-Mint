@@ -16,7 +16,6 @@ The client is ran using two `docker compose` files.
 | [bpipe](https://github.com/exorde-labs/bpipe/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/bpipe) | Batch processing |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/bpipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/bpipe ) |
 | [upipe](https://github.com/exorde-labs/upipe/tree/main) |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/upipe) | Unit processing | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/upipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/upipe) |
 | [orchestrator](https://github.com/exorde-labs/orchestrator/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/orchestrator)| Orchestration & Monitoring | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/orchestrator)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/orchestrator) |
-| [spot](https://github.com/exorde-labs/spot/tree/main) | ~800MB per module | Spotting drivers | - | - |
 
 - `MAIN_ADDRESS` is specified as an ENV variable
 
@@ -26,7 +25,7 @@ MAIN_ADDRESS=... docker compose up -d
 ```
 > [more parameters to buff the perf](./CUSTOMIZE.md)
 
-## :two: Spotters
+## :two: [Spotters](https://github.com/exorde-labs/spot/tree/main)
 > - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
 
 | image | Image size | Version | Pulls |
