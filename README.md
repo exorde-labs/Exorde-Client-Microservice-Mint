@@ -54,7 +54,7 @@ MAIN_ADDRESS=... docker compose up -d
 ### Example
 
 ```shell
-rss=2 docker compose up -d
+rss=2 docker compose up -d -f spotters.yaml
 ```
 Will launch two rss instances.
 
