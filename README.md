@@ -8,6 +8,8 @@
 # 📘 How to mine EXD
 
 The client is ran using two `docker compose` files.
+- `docker-compose.yaml` : processing and web3
+- `spotters.yaml` : scraping services
 
 ## 1️⃣ Core
 | image | Image size | description | Version | Pulls |
