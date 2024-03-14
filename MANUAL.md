@@ -1,35 +1,30 @@
 
-##### 📘 How to mine EXD
+# 📘 How to mine EXD
+> The client is ran using two `docker compose` files.
 
+## 1️⃣ Core
 - `MAIN_ADDRESS` is specified as an ENV variable
 
+### Example
 ```bash
 MAIN_ADDRESS=... docker compose up -d
 ```
+> [more parameters to buff the perf](./CUSTOMIZE.md)
 
-##### 🧑‍🤝‍🧑 Horizontal Scaling (upipe/hoz.yaml)
 
-- `upipe` stands for `unit_data_pipe` and GPU support is not recommended as the loading time exceeds the benefits. 
-For this component horizontal scaling is prefered using `UPIPE_SIZE`
 
+## :two: Spotters
+
+[`spotters.yaml`](./docker-compose.yaml)  provides an easy way to launch the different spotters with different redundancy parameters, each module is parametrable with it's three first leters (jumping over `spot`)
+
+### Example
+
+```shell
+rss=2 docker compose up -d
 ```
-... UPIPE_SIZE=2 docker-compose -f docker-compose  up
-```
+Will launch two rss instances.
 
-##### ⚡ GPU Support (bpipe/gpu.yaml)
 
-- `bpipe` stands for `batch_data_pipe` and GPU support is recommended for it.
-
-```
-... docker compose -f docker-compose.yaml -f ./gpu.yaml up -d
-```
-
-> note : we do not provide horizontal scaling options for bpipe as it is dificult to configure both GPU
-> and horizontal scaling ([more about this](https://github.com/exorde-labs/Exorde-Client-Microservice-Mint/issues/1))
-
-##### 📘 Example
-
-- Spawning the client with 5 upipe and GPU support :
-```
-MAIN_ADDRESS=... UPIPE_SIZE=5 docker-compose -f docker-compose.yaml -f ./gpu.yaml -d
-```
+### :warning: Important
+- There is **no orchestration mechanism** when you launch your spotters this way.
+- They will be staticly launched and **the module distribution usage is 100% under your control.**
