@@ -2,6 +2,14 @@
 
 
 
+
+> - [Every repository on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
+
+# 📘 How to mine EXD
+
+The client is ran using two `docker compose` files.
+
+## 1️⃣ Core
 | image | Image size | description | Version | Pulls |
 | --- |  --- | --- | --- | --- |
 | [transactioneer](https://github.com/exorde-labs/transactioneer/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/transactioneer) | Web3 interaction | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/transactioneer)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/transactioneer) |
@@ -10,7 +18,46 @@
 | [orchestrator](https://github.com/exorde-labs/orchestrator/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/orchestrator)| Orchestration & Monitoring | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/orchestrator)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/orchestrator) |
 | [spot](https://github.com/exorde-labs/spot/tree/main) | ~800MB per module | Spotting drivers | - | - |
 
+- `MAIN_ADDRESS` is specified as an ENV variable
 
-- ## :blue_book: [**How to mine EXD**](./MANUAL.md)
-- [Every repository on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
-- [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
+### Example
+```bash
+MAIN_ADDRESS=... docker compose up -d
+```
+> [more parameters to buff the perf](./CUSTOMIZE.md)
+
+## :two: Spotters
+> - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
+
+| image | Image size | Version | Pulls |
+| --- |  --- | --- | --- |
+| [spotseekingalphad89ba32s](https://github.com/exorde-labs/seekingalphad89ba32s/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotseekingalphad89ba32s) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotseekingalphad89ba32s) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotseekingalphad89ba32s) | 
+| [spotbitcointalk4de40ec26](https://github.com/exorde-labs/bitcointalk4de40ec26/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotbitcointalk4de40ec26) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotbitcointalk4de40ec26) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotbitcointalk4de40ec26) | 
+| [spotjvc8439846094ced03ff](https://github.com/exorde-labs/jvc8439846094ced03ff/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotjvc8439846094ced03ff) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotjvc8439846094ced03ff) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotjvc8439846094ced03ff) | 
+| [spotrss007d0675444aa13fc](https://github.com/exorde-labs/rss007d0675444aa13fc/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotrss007d0675444aa13fc) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotrss007d0675444aa13fc) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotrss007d0675444aa13fc) | 
+| [spotch4875eda56be56000ac](https://github.com/exorde-labs/ch4875eda56be56000ac/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotch4875eda56be56000ac) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotch4875eda56be56000ac) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotch4875eda56be56000ac) | 
+| [spotforocoches86019fc2d4](https://github.com/exorde-labs/forocoches86019fc2d4/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotforocoches86019fc2d4) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotforocoches86019fc2d4) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotforocoches86019fc2d4) | 
+| [spothackbc9419ab11eebe56](https://github.com/exorde-labs/hackbc9419ab11eebe56/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spothackbc9419ab11eebe56) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spothackbc9419ab11eebe56) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spothackbc9419ab11eebe56) | 
+| [spotmasto65ezfd86424f69a](https://github.com/exorde-labs/masto65ezfd86424f69a/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotmasto65ezfd86424f69a) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotmasto65ezfd86424f69a) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotmasto65ezfd86424f69a) | 
+| [spotnostr5fa856e7234fbee](https://github.com/exorde-labs/nostr5fa856e7234fbee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotnostr5fa856e7234fbee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotnostr5fa856e7234fbee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotnostr5fa856e7234fbee) | 
+| [spota7df32de3a60dfdb7a0b](https://github.com/exorde-labs/a7df32de3a60dfdb7a0b/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spota7df32de3a60dfdb7a0b) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spota7df32de3a60dfdb7a0b) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spota7df32de3a60dfdb7a0b) | 
+| [spotap98j3envoubi3fco1kc](https://github.com/exorde-labs/ap98j3envoubi3fco1kc/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotap98j3envoubi3fco1kc) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotap98j3envoubi3fco1kc) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotap98j3envoubi3fco1kc) | 
+| [spotlemmyw04b6eb792ca4a1](https://github.com/exorde-labs/lemmyw04b6eb792ca4a1/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotlemmyw04b6eb792ca4a1) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotlemmyw04b6eb792ca4a1) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotlemmyw04b6eb792ca4a1) | 
+| [spotwei223be19ab11e891bo](https://github.com/exorde-labs/wei223be19ab11e891bo/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotwei223be19ab11e891bo) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotwei223be19ab11e891bo) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotwei223be19ab11e891bo) | 
+| [spotfollowinc645fc950d7f](https://github.com/exorde-labs/followinc645fc950d7f/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotfollowinc645fc950d7f) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotfollowinc645fc950d7f) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotfollowinc645fc950d7f) | 
+| [spotyoutube00e1f862e5eff](https://github.com/exorde-labs/youtube00e1f862e5eff/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotyoutube00e1f862e5eff) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotyoutube00e1f862e5eff) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotyoutube00e1f862e5eff) | 
+| [spottradview251ae30a11ee](https://github.com/exorde-labs/tradview251ae30a11ee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spottradview251ae30a11ee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spottradview251ae30a11ee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spottradview251ae30a11ee) | 
+
+[`spotters.yaml`](./docker-compose.yaml)  provides an easy way to launch the different spotters with different redundancy parameters, each module is parametrable with it's three first leters (jumping over `spot`)
+
+### Example
+
+```shell
+rss=2 docker compose up -d
+```
+Will launch two rss instances.
+
+
+### :warning: Important
+- There is **no orchestration mechanism** when you launch your spotters this way.
+- They will be staticly launched and **the module distribution usage is 100% under your control.**
