@@ -5,6 +5,15 @@
 
 > - [Every repository on this subject](https://github.com/search?q=topic%3Aexorde-spot+org%3Aexorde-labs+&type=repositories)
 
+## TLDR
+
+```
+MAIN_ADDRESS=... rss=1, bit=1, jvc=1, ch4=1, for=1, hac=1, mas=1, nos=1, a7d=1, ap9=1, lem=1, wei=1, fol=1, you=1, tra=1 docker compose -f docker-compose.yaml -f spotters.yaml up -d
+```
+Where each three letter code represent a `spotter` module ; 
+
+:warning: **There is automatic orchestration of spotters atm, configuration is completely left to you.**
+
 # 📘 How to mine EXD
 
 The client is ran using two `docker compose` files.
