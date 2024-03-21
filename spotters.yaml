@@ -8,7 +8,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotjvc8439846094ced03ff
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${jvc:-0}
@@ -19,7 +20,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotbitcointalk4de40ec26
-    networks: exorde-network
+    networks:
+        - exorde-network
     init: true
     deploy:
       replicas: ${bit:-0}
@@ -30,7 +32,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotnostr5fa856e7234fbee
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${nos:-0}
@@ -41,7 +44,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotseekingalphad89ba32s
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${see:-0}
@@ -52,7 +56,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotforocoches86019fc2d4
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${for:-0}
@@ -63,7 +68,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotch4875eda56be56000ac
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${ch4:-0}
@@ -74,7 +80,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotrss007d0675444aa13fc
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${rss:-0}
@@ -85,7 +92,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotlemmyw04b6eb792ca4a1
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${lem:-0}
@@ -96,7 +104,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotwei223be19ab11e891bo
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${wei:-0}
@@ -107,7 +116,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spothackbc9419ab11eebe56
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${hac:-0}
@@ -118,7 +128,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotmasto65ezfd86424f69a
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${mas:-0}
@@ -129,7 +140,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotap98j3envoubi3fco1kc
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${ap9:-0}
@@ -140,7 +152,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spota7df32de3a60dfdb7a0b
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${a7d:-0}
@@ -155,7 +168,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotyoutube00e1f862e5eff
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${you:-0}
@@ -166,7 +180,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spotfollowinc645fc950d7f
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${fol:-0}
@@ -177,7 +192,8 @@ services:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spottradview251ae30a11ee
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
       replicas: ${tra:-0}
