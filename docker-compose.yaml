@@ -2,13 +2,13 @@ version: '3.9'
 
 services:
   upipe:
+    image: exordelabs/upipe:latest
     networks:
       - exorde-network
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=upipe"
     restart: always
-    image: exordelabs/upipe:latest
     environment:
       - batch_target=http://bpipe:8000
     init: true
@@ -22,13 +22,13 @@ services:
       start_period: 180s
 
   bpipe:
+    image: exordelabs/bpipe:latest
     networks:
       - exorde-network
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=bpipe"
     restart: always
-    image: exordelabs/bpipe:latest
     environment:
       - transactioneer=http://transactioneer:8000
       - batch_size=20
@@ -40,6 +40,7 @@ services:
       retries: 10
       start_period: 180s
     deploy:
+      replicas: ${BPIPE_SIZE:-1}
       resources:
         limits:
           memory: 6G
@@ -47,6 +48,7 @@ services:
           memory: 6G
 
   transactioneer:
+    image: exordelabs/transactioneer:latest
     networks:
       - exorde-network
     labels:
@@ -57,12 +59,13 @@ services:
     restart: always
     ports:
       - "7991:8000"
-    image: exordelabs/transactioneer:latest
     environment:
       - main_address=${MAIN_ADDRESS}
     init: true
     working_dir: /app/
     command: python3.10 /app/transactioneer.py
+    deploy:
+      replicas: ${TRANSACTIONEER_SIZE:-1}
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
       interval: 5s
@@ -71,19 +74,22 @@ services:
       start_period: 180s
 
   orchestrator:
+    image: exordelabs/orchestrator:latest
+    labels:
+      - "network.exorde.monitor=true"
+      - "network.exorde.service=orchestrator"
     networks:
       - exorde-network
     restart: always
     environment:
-      - FILTER=network.exorde.monitor:true
-      - ORCHESTRATE=${ORCHESTRATE:-0}
-      - REFRESH_TIME=3600
-    image: exordelabs/orchestrator:latest
+      - PROMETHEUS_TARGET_DISCOVERY_LABEL=network.exorde.monitor:true
+      - SPOTTERS_AMOUNT=${ORCHESTRATE:-0}
+      - SPOTTERS_TIME_WINDOW=3600
     init: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "8777:8080"
+      - "8777:8000"
 
 networks:
   exorde-network:
