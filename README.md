@@ -11,8 +11,6 @@
 MAIN_ADDRESS=... SPOTTERS_AMOUNT=2 docker compose up -d
 ```
 
-:warning: **There is automatic orchestration of spotters atm, configuration is completely left to you.**
-
 # 📘 How to mine EXD
 
 The client is ran using two `docker compose` files.
@@ -62,7 +60,7 @@ MAIN_ADDRESS=... docker compose up -d
 ### Custom `spotters` distribution
 
 ```shell
-rss=2 docker compose up -d -f spotters.yaml
+MAIN_ADDRESS=... rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 you=1 tra=1 docker compose -f spotters.yaml -f docker-compose.yaml up -d
 ```
 Will launch two rss instances.
 
