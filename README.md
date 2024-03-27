@@ -36,8 +36,6 @@ The client is ran using two `docker compose` files.
 ```bash
 MAIN_ADDRESS=... docker compose up -d
 ```
-> [more parameters to buff the perf](./CUSTOMIZE.md)
-
 ## :two: [Spotters](https://github.com/exorde-labs/spot/tree/main)
 > - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
 
