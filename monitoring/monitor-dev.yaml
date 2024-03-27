@@ -4,6 +4,8 @@ services:
   prometheus:
     restart: always
     image: prom/prometheus:v2.48.0
+    networks:
+      - exorde-network
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
     ports:
@@ -12,27 +14,20 @@ services:
   grafana:
     restart: always
     image: grafana/grafana:latest
+    networks:
+      - exorde-network
     user: "1000"
-    environment:
-      GF_SECURITY_ADMIN_USER: 'exorde-admin'
-      GF_SECURITY_ADMIN_PASSWORD: '6r17-ex0rde'
     depends_on:
       - prometheus
     ports:
       - '3000:3000'
     volumes:
       - ./grafana:/var/lib/grafana
-
-  node-exporter:
-    restart: always
-    image: prom/node-exporter:v1.2.2
-    network_mode: host
-    ports:
-      - '9100:9100'
-
   cadvisor:
     restart: always
     image: gcr.io/cadvisor/cadvisor:latest
+    networks:
+      - exorde-network
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -47,6 +42,8 @@ services:
   jaeger:
     restart: always
     image: jaegertracing/all-in-one:latest
+    networks:
+      - exorde-network
     ports:
       - "5775:5775/udp"
       - "6831:6831/udp"
@@ -59,3 +56,8 @@ services:
     environment:
       COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
       AGENT_MAX_PACKET_SIZE: 400459
+
+
+networks:
+  exorde-network:
+    external: true

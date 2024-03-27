@@ -26,5 +26,5 @@ scrape_configs:
     - localhost:9090
 - job_name: 'dynamic_containers'
   http_sd_configs:
-    - url: 'http://container_scout:8080/targets'
-      refresh_interval: 1m  # Fetch the target list every minute.
+    - url: 'http://orchestrator:8000/targets'
+      refresh_interval: 5s  # Fetch the target list every minute.
