@@ -31,11 +31,31 @@ The client is ran using two `docker compose` files.
 - `UPIPE_SIZE`: allow to spawn multiple `upipe` service, which are responsible for CPU unit-processing
 - `UPIPE_PROCESSING_TIMEOUT`: allows you to specify the timeout on CPU processing logic, a short time can be used on better machine while slower machine will fall in the 8s range.
 - `TRACE`: enable tracing
+- `SPOTTER_AMOUNT` : this will spawn N `spotter` container with a repartition managed by exorde-labs. There is no conflict with a manual configuration (thanks to `spotters.yaml` and you can use both way to launch them.
 
 ### Example
+- with automaticly managed spotters
 ```bash
 MAIN_ADDRESS=... SPOTTERS_AMOUNT=2 docker compose up -d
 ```
+- only core
+```bash
+MAIN_ADDRESS=... docker compose up -d
+```
+
+
+### Custom `spotters` distribution
+
+[`spotters.yaml`](./docker-compose.yaml)  provides an easy way to launch the different spotters with different redundancy parameters, each module is parametrable with it's three first leters (jumping over `spot`)
+
+```shell
+rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 you=1 tra=1 docker compose -f spotters.yaml up -d
+```
+
+The `spotters.yaml` is connected with services in `docker-compose` trough a docker network called `exorde-network`. You do not have to launch them together as they will automaticly reach out. 
+
+
+
 ## :two: [Spotters](https://github.com/exorde-labs/spot/tree/main)
 > - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
 
@@ -58,13 +78,3 @@ MAIN_ADDRESS=... SPOTTERS_AMOUNT=2 docker compose up -d
 | [spotyoutube00e1f862e5eff](https://github.com/exorde-labs/youtube00e1f862e5eff/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotyoutube00e1f862e5eff) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotyoutube00e1f862e5eff) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotyoutube00e1f862e5eff) | 
 | [spottradview251ae30a11ee](https://github.com/exorde-labs/tradview251ae30a11ee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spottradview251ae30a11ee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spottradview251ae30a11ee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spottradview251ae30a11ee) | 
 
-### Custom `spotters` distribution
-> note that this is only for customization and you do not require this if you are using `SPOTTERS_AMOUNT` which will spawn `spotters` for you.
-
-[`spotters.yaml`](./docker-compose.yaml)  provides an easy way to launch the different spotters with different redundancy parameters, each module is parametrable with it's three first leters (jumping over `spot`)
-
-```shell
-rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 you=1 tra=1 docker compose -f spotters.yaml up -d
-```
-
-The `spotters.yaml` is connected with processing services in `docker-compose` trough a docker network called `exorde-network`. You do not need launching them together. 
