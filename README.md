@@ -34,7 +34,7 @@ The client is ran using two `docker compose` files.
 - `SPOTTER_AMOUNT` : this will spawn N `spotter` container with a repartition managed by exorde-labs. There is no conflict with a manual configuration (thanks to `spotters.yaml` and you can use both way to launch them.
 
 ### Example
-- with automaticly managed spotters
+- with automaticly managed spotters (2 spotters)
 ```bash
 MAIN_ADDRESS=... SPOTTERS_AMOUNT=2 docker compose up -d
 ```
