@@ -59,6 +59,8 @@ MAIN_ADDRESS=... docker compose up -d
 | [spottradview251ae30a11ee](https://github.com/exorde-labs/tradview251ae30a11ee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spottradview251ae30a11ee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spottradview251ae30a11ee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spottradview251ae30a11ee) | 
 
 ### Custom `spotters` distribution
+> note that this is only for customization and you do not require this if you are using `SPOTTERS_AMOUNT` which will spawn `spotters` for you.
+
 [`spotters.yaml`](./docker-compose.yaml)  provides an easy way to launch the different spotters with different redundancy parameters, each module is parametrable with it's three first leters (jumping over `spot`)
 
 ```shell
