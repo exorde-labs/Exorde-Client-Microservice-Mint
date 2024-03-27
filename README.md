@@ -34,7 +34,7 @@ The client is ran using two `docker compose` files.
 
 ### Example
 ```bash
-MAIN_ADDRESS=... docker compose up -d
+MAIN_ADDRESS=... SPOTTERS_AMOUNT=2 docker compose up -d
 ```
 ## :two: [Spotters](https://github.com/exorde-labs/spot/tree/main)
 > - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
