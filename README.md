@@ -60,9 +60,10 @@ MAIN_ADDRESS=... docker compose up -d
 ### Custom `spotters` distribution
 
 ```shell
-MAIN_ADDRESS=... rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 you=1 tra=1 docker compose -f spotters.yaml -f docker-compose.yaml up -d
+rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 you=1 tra=1 docker compose -f spotters.yaml up -d
 ```
-Will launch two rss instances.
+
+The `spotters.yaml` is connected with processing services in `docker-compose` trough a docker network called `exorde-network`. You do not need launching them together. 
 
 ### Available parameters
 
