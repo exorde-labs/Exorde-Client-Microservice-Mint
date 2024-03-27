@@ -8,9 +8,8 @@
 ## TLDR
 
 ```
-MAIN_ADDRESS=... rss=1, bit=1, jvc=1, ch4=1, for=1, hac=1, mas=1, nos=1, a7d=1, ap9=1, lem=1, wei=1, fol=1, you=1, tra=1 docker compose -f spotters.yaml -f docker-compose.yaml up -d
+MAIN_ADDRESS=... SPOTTERS_AMOUNT=2 docker compose up -d
 ```
-Where each three letter code represent a `spotter` module ; 
 
 :warning: **There is automatic orchestration of spotters atm, configuration is completely left to you.**
 
@@ -60,13 +59,18 @@ MAIN_ADDRESS=... docker compose up -d
 
 [`spotters.yaml`](./docker-compose.yaml)  provides an easy way to launch the different spotters with different redundancy parameters, each module is parametrable with it's three first leters (jumping over `spot`)
 
-### Example
+### Custom `spotters` distribution
 
 ```shell
 rss=2 docker compose up -d -f spotters.yaml
 ```
 Will launch two rss instances.
 
+### Available parameters
+
+- `UPIPE_SIZE`: allow to spawn multiple `upipe` service, which are responsible for CPU unit-processing
+- `UPIPE_PROCESSING_TIMEOUT`: allows you to specify the timeout on CPU processing logic, a short time can be used on better machine while slower machine will fall in the 8s range.
+- `TRACE`: enable tracing
 
 ### :warning: Important
 - There is **no orchestration mechanism** when you launch your spotters this way.
