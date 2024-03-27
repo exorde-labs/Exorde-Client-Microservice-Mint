@@ -42,7 +42,8 @@ for repo in repos:
         - "network.exorde.monitor=true"
         - "network.exorde.service=spot"
     image: exordelabs/spot{repo}
-    networks: exorde-network
+    networks: 
+        - exorde-network
     init: true
     deploy:
 """, end='')
