@@ -25,7 +25,12 @@ The client is ran using two `docker compose` files.
 | [upipe](https://github.com/exorde-labs/upipe/tree/main) |  ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/upipe) | Unit processing | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/upipe)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/upipe) |
 | [orchestrator](https://github.com/exorde-labs/orchestrator/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/orchestrator)| Orchestration & Monitoring | ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/orchestrator)| ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/orchestrator) |
 
+
+### Available parameters
 - `MAIN_ADDRESS` is specified as an ENV variable
+- `UPIPE_SIZE`: allow to spawn multiple `upipe` service, which are responsible for CPU unit-processing
+- `UPIPE_PROCESSING_TIMEOUT`: allows you to specify the timeout on CPU processing logic, a short time can be used on better machine while slower machine will fall in the 8s range.
+- `TRACE`: enable tracing
 
 ### Example
 ```bash
@@ -63,13 +68,3 @@ rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 yo
 ```
 
 The `spotters.yaml` is connected with processing services in `docker-compose` trough a docker network called `exorde-network`. You do not need launching them together. 
-
-### Available parameters
-
-- `UPIPE_SIZE`: allow to spawn multiple `upipe` service, which are responsible for CPU unit-processing
-- `UPIPE_PROCESSING_TIMEOUT`: allows you to specify the timeout on CPU processing logic, a short time can be used on better machine while slower machine will fall in the 8s range.
-- `TRACE`: enable tracing
-
-### :warning: Important
-- There is **no orchestration mechanism** when you launch your spotters this way.
-- They will be staticly launched and **the module distribution usage is 100% under your control.**
