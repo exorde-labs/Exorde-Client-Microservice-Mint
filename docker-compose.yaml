@@ -5,6 +5,8 @@ services:
     image: exordelabs/upipe:latest
     networks:
       - exorde-network
+    ports:
+      - "7998:8000"
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=upipe"
@@ -26,6 +28,8 @@ services:
     image: exordelabs/bpipe:latest
     networks:
       - exorde-network
+    ports:
+      - "7999:8000"
     labels:
       - "network.exorde.monitor=true"
       - "network.exorde.service=bpipe"
