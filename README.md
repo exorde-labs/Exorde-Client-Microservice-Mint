@@ -54,8 +54,6 @@ rss=1 bit=1 jvc=1 ch4=1 for=1 hac=1 mas=1 nos=1 a7d=1 ap9=1 lem=1 wei=1 fol=1 yo
 
 The `spotters.yaml` is connected with services in `docker-compose` trough a docker network called `exorde-network`. You do not have to launch them together as they will automaticly reach out. 
 
-
-
 ## :two: [Spotters](https://github.com/exorde-labs/spot/tree/main)
 > - [Every available `spot` driver repositories](https://github.com/search?q=topic%3Aexorde-spot-driver+org%3Aexorde-labs+&type=repositories)
 
@@ -78,3 +76,19 @@ The `spotters.yaml` is connected with services in `docker-compose` trough a dock
 | [spotyoutube00e1f862e5eff](https://github.com/exorde-labs/youtube00e1f862e5eff/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spotyoutube00e1f862e5eff) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spotyoutube00e1f862e5eff) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spotyoutube00e1f862e5eff) | 
 | [spottradview251ae30a11ee](https://github.com/exorde-labs/tradview251ae30a11ee/tree/main) | ![Docker Image Size](https://img.shields.io/docker/image-size/exordelabs/spottradview251ae30a11ee) |  ![Docker Image Version](https://img.shields.io/docker/v/exordelabs/spottradview251ae30a11ee) | ![Docker Pulls](https://img.shields.io/docker/pulls/exordelabs/spottradview251ae30a11ee) | 
 
+### Custom Spotter Logic
+
+- Pushing data is as simple as making a `POST` request to a `upipe` instance on `/`
+- You can use `orchestrator` to streamline the access to your different services,
+  ```
+    curl 'http://orchestrator/get?network.exorde.service=upipe' -> will return a list of `upipe` ips
+  ```
+  You select a random one and are ready to push data
+
+  note: all services use port 8000
+  
+  **:warning: We infer the location of each service at runtime because of live-update which cause your services location to be inconsistent in time. This is NOT an option if you want something stable, EVEN if your `spotters` are not updated the `upipe`, `bpipe` etc.. ARE**
+
+
+
+  
